@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { PlaceholderPage } from '@/components/layout/placeholder-page';
+import { FavoritesPage } from '@/features/account/favorites-page';
+import { requireSession } from '@/features/auth/route-guard';
 
 export const Route = createFileRoute('/favoritos')({
-  component: () => <PlaceholderPage title="favoritos" description="Em construção." />,
+  beforeLoad: requireSession,
+  component: FavoritesPage,
 });

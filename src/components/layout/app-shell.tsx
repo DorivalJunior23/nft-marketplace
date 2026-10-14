@@ -3,6 +3,7 @@ import { useState, type ReactNode } from 'react';
 
 import { Container } from '@/components/common/container';
 import { Toaster } from '@/components/ui/sonner';
+import { SessionSync } from '@/features/auth/session-sync';
 import { useLogout } from '@/features/auth/use-logout';
 import { useCartCount } from '@/features/cart/queries';
 import { useIsDesktop } from '@/hooks/use-media-query';
@@ -59,6 +60,7 @@ export function AppShell({ children }: AppShellProps) {
         </Container>
       ) : null}
 
+      <SessionSync />
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
       <Toaster position={isDesktop ? 'bottom-right' : 'top-center'} closeButton />
     </div>

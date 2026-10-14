@@ -22,6 +22,7 @@ export function stringifySearch(search: Record<string, unknown>): string {
     }
     params.set(key, String(value));
   }
-  const text = params.toString();
+  // Vírgulas das listas ficam legíveis na URL (`collection=musica,jogos`).
+  const text = params.toString().replace(/%2C/g, ',');
   return text ? `?${text}` : '';
 }

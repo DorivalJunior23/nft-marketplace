@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { PlaceholderPage } from '@/components/layout/placeholder-page';
+import { ProfilePage } from '@/features/account/profile-page';
+import { requireSession } from '@/features/auth/route-guard';
 
 export const Route = createFileRoute('/perfil')({
-  component: () => <PlaceholderPage title="perfil" description="Em construção." />,
+  beforeLoad: requireSession,
+  component: ProfilePage,
 });
