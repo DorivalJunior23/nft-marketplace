@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { PlaceholderPage } from '@/components/layout/placeholder-page';
+import { requireSession } from '@/features/auth/route-guard';
+import { CheckoutPage } from '@/features/checkout/checkout-page';
 
 export const Route = createFileRoute('/pagamento')({
-  component: () => <PlaceholderPage title="pagamento" description="Em construção." />,
+  beforeLoad: requireSession,
+  component: CheckoutPage,
 });

@@ -4,9 +4,10 @@ export type WalletKind = 'primary' | 'secondary';
 export type WalletType = 'metamask' | 'walletconnect' | 'coinbase';
 export type WalletConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'rejected';
 
+/** Ordem das opções em "Carteira e rede" no Figma. */
 export const WALLET_TYPES: ReadonlyArray<{ id: WalletType; name: string }> = [
-  { id: 'metamask', name: 'MetaMask' },
   { id: 'walletconnect', name: 'WalletConnect' },
+  { id: 'metamask', name: 'MetaMask' },
   { id: 'coinbase', name: 'Coinbase Wallet' },
 ];
 

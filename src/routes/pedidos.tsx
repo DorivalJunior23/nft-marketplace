@@ -1,7 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 
-import { PlaceholderPage } from '@/components/layout/placeholder-page';
+import { requireSession } from '@/features/auth/route-guard';
 
 export const Route = createFileRoute('/pedidos')({
-  component: () => <PlaceholderPage title="pedidos" description="Em construção." />,
+  beforeLoad: requireSession,
+  component: () => <Outlet />,
 });

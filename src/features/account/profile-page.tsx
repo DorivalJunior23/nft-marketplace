@@ -30,7 +30,10 @@ const profileSchema = z
       .string()
       .trim()
       .toLowerCase()
-      .regex(/^[a-z0-9-]{3,40}$/, 'Use de 3 a 40 caracteres: letras minúsculas, números ou hífen.'),
+      .regex(
+        /^(?=.{3,40}$)[a-z0-9-]+(\.[a-z0-9-]+)*$/,
+        'Use de 3 a 40 caracteres: letras minúsculas, números, hífen ou ponto.',
+      ),
     walletAlias: z
       .string()
       .trim()

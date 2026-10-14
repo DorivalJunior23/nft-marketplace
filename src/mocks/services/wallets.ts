@@ -7,7 +7,7 @@ import { getScenario } from '../runtime';
 import { EMAIL_PATTERN } from './auth';
 
 const ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/;
-const ENS_PATTERN = /^[a-z0-9-]{3,40}(\.eth)?$/;
+const ENS_PATTERN = /^(?=.{3,44}$)[a-z0-9-]+(\.[a-z0-9-]+)*$/;
 
 function strip(wallet: Wallet & { userId: string }): Wallet {
   const copy: Wallet & { userId?: string } = { ...wallet };
@@ -57,7 +57,7 @@ function validateInput(body: Partial<WalletInput>): WalletInput {
   }
   if (body.email && !EMAIL_PATTERN.test(body.email)) details.email = ['Informe um e-mail válido.'];
   if (body.ensName && !ENS_PATTERN.test(body.ensName.toLowerCase()))
-    details.ensName = ['Use letras minúsculas, números ou hífen.'];
+    details.ensName = ['Use letras minúsculas, números, hífen ou ponto.'];
   if (Object.keys(details).length) throw validationError(details);
   return {
     kind: body.kind!,

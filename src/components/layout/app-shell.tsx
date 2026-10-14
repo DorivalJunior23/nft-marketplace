@@ -7,6 +7,7 @@ import { SessionSync } from '@/features/auth/session-sync';
 import { useLogout } from '@/features/auth/use-logout';
 import { useCartCount } from '@/features/cart/queries';
 import { useIsDesktop } from '@/hooks/use-media-query';
+import { ScenarioPanel } from '@/mocks/panel/scenario-panel';
 
 import { SearchDialog } from './search-dialog';
 import { SiteFooter } from './site-footer';
@@ -61,6 +62,7 @@ export function AppShell({ children }: AppShellProps) {
       ) : null}
 
       <SessionSync />
+      <ScenarioPanel />
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
       <Toaster position={isDesktop ? 'bottom-right' : 'top-center'} closeButton />
     </div>

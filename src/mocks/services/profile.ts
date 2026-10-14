@@ -15,7 +15,7 @@ import {
   validatePassword,
 } from './auth';
 
-const ENS_PATTERN = /^[a-z0-9-]{3,40}$/;
+const ENS_PATTERN = /^(?=.{3,40}$)[a-z0-9-]+(\.[a-z0-9-]+)*$/;
 const MAX_AVATAR_BYTES = 1_500_000;
 
 export function getProfile(userId: string): Profile {
@@ -57,7 +57,7 @@ export function updateProfile(userId: string, body: UpdateProfileRequest): Profi
   if (email !== undefined && !EMAIL_PATTERN.test(email))
     details.email = ['Informe um e-mail válido.'];
   if (ensName && !ENS_PATTERN.test(ensName))
-    details.ensName = ['Use de 3 a 40 caracteres: letras minúsculas, números ou hífen.'];
+    details.ensName = ['Use de 3 a 40 caracteres: letras minúsculas, números, hífen ou ponto.'];
   if (walletAlias !== undefined && walletAlias.length > 40)
     details.walletAlias = ['Use no máximo 40 caracteres.'];
   if (Object.keys(details).length) throw validationError(details);
