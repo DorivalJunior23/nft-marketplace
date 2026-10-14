@@ -1,7 +1,9 @@
-import * as React from 'react';
-import { cn } from '@/lib/utils';
 import { Slider as SliderPrimitive } from 'radix-ui';
+import { useMemo, type ComponentProps } from 'react';
 
+import { cn } from '@/lib/utils';
+
+/** Slider de faixa com o visual do Figma: trilho laranja 4px e alças de 15px com borda Ink. */
 function Slider({
   className,
   defaultValue,
@@ -9,12 +11,11 @@ function Slider({
   min = 0,
   max = 100,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root>) {
-  const _values = React.useMemo(
+}: ComponentProps<typeof SliderPrimitive.Root>) {
+  const values = useMemo(
     () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
     [value, defaultValue, min, max],
   );
-
   return (
     <SliderPrimitive.Root
       data-slot="slider"
@@ -23,29 +24,23 @@ function Slider({
       min={min}
       max={max}
       className={cn(
-        'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
+        'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50',
         className,
       )}
       {...props}
     >
       <SliderPrimitive.Track
         data-slot="slider-track"
-        className={cn(
-          'bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5',
-        )}
+        className="bg-primary relative h-1 w-full grow overflow-hidden rounded-full"
       >
-        <SliderPrimitive.Range
-          data-slot="slider-range"
-          className={cn(
-            'bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full',
-          )}
-        />
+        <SliderPrimitive.Range data-slot="slider-range" className="bg-primary absolute h-full" />
       </SliderPrimitive.Track>
-      {Array.from({ length: _values.length }, (_, index) => (
+      {values.map((_, index) => (
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
           key={index}
-          className="border-primary ring-ring/50 block size-4 shrink-0 rounded-full border bg-white shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+          aria-label={index === 0 ? 'Preço mínimo' : 'Preço máximo'}
+          className="border-ink bg-primary ring-primary/40 block size-[15px] shrink-0 rounded-full border-[3px] transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none"
         />
       ))}
     </SliderPrimitive.Root>

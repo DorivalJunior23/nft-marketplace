@@ -1,7 +1,11 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 
+import { NotFoundPage } from '@/components/layout/not-found-page';
+
 import { routeTree } from '@/routeTree.gen';
+
+import { parseSearch, stringifySearch } from './search';
 
 export interface RouterContext {
   queryClient: QueryClient;
@@ -14,6 +18,9 @@ export function createAppRouter(queryClient: QueryClient) {
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
     scrollRestoration: true,
+    parseSearch,
+    stringifySearch,
+    defaultNotFoundComponent: () => <NotFoundPage />,
   });
 }
 
