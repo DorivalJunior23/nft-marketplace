@@ -15,6 +15,11 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
-  server: { port: 5173, host: process.env.HOST ?? 'localhost' },
+  server: {
+    port: 5173,
+    host: process.env.HOST ?? 'localhost',
+    // O HMR sai da raiz para não colidir com o Socket.IO interceptado pelo MSW.
+    hmr: { path: '/__vite_hmr' },
+  },
   preview: { port: 4173, host: process.env.HOST ?? 'localhost' },
 });

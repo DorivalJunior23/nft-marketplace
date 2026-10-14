@@ -8,19 +8,25 @@ import { createRoot } from 'react-dom/client';
 
 import { createQueryClient } from '@/app/query-client';
 import { createAppRouter } from '@/app/router';
+import { enableMocks } from '@/mocks/enable';
 
-const queryClient = createQueryClient();
-const router = createAppRouter(queryClient);
+async function bootstrap(): Promise<void> {
+  // Os mocks precisam estar ativos antes da primeira consulta.
+  await enableMocks();
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error('Elemento #root não encontrado no documento.');
+  const queryClient = createQueryClient();
+  const router = createAppRouter(queryClient);
+
+  const rootElement = document.getElementById('root');
+  if (!rootElement) throw new Error('Elemento #root não encontrado no documento.');
+
+  createRoot(rootElement).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </StrictMode>,
+  );
 }
 
-createRoot(rootElement).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  </StrictMode>,
-);
+void bootstrap();
