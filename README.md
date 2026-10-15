@@ -1,5 +1,7 @@
 # Kurio · Marketplace de NFTs
 
+Demonstração: <https://nft-marketplace-beta-tawny.vercel.app> · Repositório: <https://github.com/DorivalJunior23/nft-marketplace>
+
 Marketplace de NFTs em React + TypeScript construído para o Desafio Frontend, com fidelidade ao layout do Figma e fluxos completos de descoberta, compra e conta do colecionador. Toda a API, a autenticação, as carteiras e o pagamento funcionam com dados simulados por MSW, inclusive na versão publicada.
 
 ## Funcionalidades
@@ -120,6 +122,8 @@ Fluxos de falha passo a passo:
 Os testes sobem o build e o preview sozinhos. Para rodar um projeto: `npx playwright test --project=chromium-mobile`.
 
 ## Deploy
+
+Versão publicada: **<https://nft-marketplace-beta-tawny.vercel.app>** (Vercel, branch `main`). Mocks e tempo real ativos; acesso direto e refresh funcionam em qualquer rota.
 
 Recomendado: Vercel, importando o repositório com o preset Vite (`npm run build`, saída `dist/`). O `vercel.json` já traz o rewrite de SPA para acesso direto e refresh de qualquer rota, além dos cabeçalhos de cache. Como `.env.production` mantém `VITE_ENABLE_MOCKS=true`, a versão publicada funciona com os mocks e o tempo real sem configuração extra.
 
