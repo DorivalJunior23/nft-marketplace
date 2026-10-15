@@ -22,10 +22,11 @@ function readInitialScenarioId(): string {
     }
     return fromQuery;
   }
+  const fallback = import.meta.env.VITE_MOCK_SCENARIO || DEFAULT_SCENARIO_ID;
   try {
-    return window.localStorage.getItem(STORAGE_KEY) ?? DEFAULT_SCENARIO_ID;
+    return window.localStorage.getItem(STORAGE_KEY) ?? fallback;
   } catch {
-    return DEFAULT_SCENARIO_ID;
+    return fallback;
   }
 }
 

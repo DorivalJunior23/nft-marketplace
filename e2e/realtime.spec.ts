@@ -47,6 +47,28 @@ test.describe('Tempo real', () => {
     await expect.poll(() => mocks(page).socketConnections()).toBe(1);
   });
 
+  test('evento de pedido com versão antiga é ignorado e queda do socket não trava o pedido', async ({
+    page,
+  }) => {
+    await login(page, USERS.nova, '/');
+    await addToCartViaApi(page, 'emerald-ape-0042', '1-50', 1);
+    await gotoApp(page, '/pagamento');
+    await page.getByTestId('pay-button').click();
+    await page.getByTestId('confirm-order-button').click();
+    await expect(page).toHaveURL(/\/pedidos\/ord_/);
+    // Socket cai logo após o envio, sem recarregar: a consulta periódica e a reconexão recuperam.
+    await mocks(page).dropSocket();
+    await expect(page.getByTestId('order-status')).toHaveText('Confirmado', { timeout: 15_000 });
+    await expect.poll(() => mocks(page).socketConnections()).toBe(1);
+    const [order] = await mocks(page).ordersOf(USERS.nova.id);
+
+    // Evento atrasado com versão menor e status "pendente": nunca regride o pedido confirmado.
+    await mocks(page).republishOrder(order!.id, true);
+    await page.waitForTimeout(800);
+    await expect(page.getByTestId('order-status')).toHaveText('Confirmado');
+    await expect(page.getByTestId('order-receipt')).toBeVisible();
+  });
+
   test('eventos de pedido de outro usuário não chegam à sessão atual', async ({ page }) => {
     await login(page, USERS.nova, '/');
     await addToCartViaApi(page, 'golden-signal-0160', '1-50', 1);

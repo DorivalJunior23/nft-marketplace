@@ -60,6 +60,24 @@ test.describe('Acessibilidade', () => {
     await expect(trigger).toBeFocused();
   });
 
+  test('pílulas de edição seguem o padrão de rádio: setas movem a seleção', async ({ page }) => {
+    await gotoApp(page, '/nft/emerald-ape-0042');
+    const group = page.getByRole('radiogroup', { name: 'Edição:' });
+    const first = group.getByRole('radio').first();
+    await first.focus();
+    await expect(first).toHaveAttribute('aria-checked', 'true');
+    await page.keyboard.press('ArrowRight');
+    const second = group.getByRole('radio').nth(1);
+    await expect(second).toBeFocused();
+    await expect(second).toHaveAttribute('aria-checked', 'true');
+    await expect(first).toHaveAttribute('aria-checked', 'false');
+    await page.keyboard.press('End');
+    await expect(group.getByRole('radio').last()).toBeFocused();
+    // Um único tab stop: Tab sai do grupo em vez de passar por cada pílula.
+    await page.keyboard.press('Tab');
+    await expect(group.locator(':focus')).toHaveCount(0);
+  });
+
   test('validação de formulário associa mensagens aos campos', async ({ page }) => {
     await gotoApp(page, '/entrar');
     const form = page.getByRole('form', { name: 'Entrar na conta' });

@@ -28,7 +28,10 @@ export function QuantityStepper({
   const canIncrease = value < max && !disabled;
   const buttonClass = cn(
     'flex items-center justify-center rounded-full border border-ink bg-primary text-black shadow-[0_6.6px_19.8px_rgb(20_13_10/0.15)] transition-colors hover:bg-primary-light focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40',
-    size === 'md' ? 'h-[50px] w-[33px]' : 'h-[30px] w-5',
+    // Tamanho pequeno (carrinho): 20x30 visuais com área de toque de 24x30 via pseudo-elemento.
+    size === 'md'
+      ? 'h-[50px] w-[33px]'
+      : "relative h-[30px] w-5 after:absolute after:inset-y-0 after:-inset-x-0.5 after:content-['']",
   );
   return (
     <div

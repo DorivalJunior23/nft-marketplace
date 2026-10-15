@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { toast } from '@/lib/toast';
 
 import { authApi } from '@/api';
+import { reconnectSocket } from '@/realtime/socket';
 
 import { isPrivatePath } from './route-guard';
 import { sessionStore, useSessionState } from './session-store';
@@ -39,6 +40,8 @@ export function SessionSync() {
     }
     if (handled.current) return;
     handled.current = true;
+    // Libera as subscriptions da sessão expirada: o socket volta sem credenciais.
+    reconnectSocket();
     if (isPrivatePath(location.pathname)) {
       void navigate({ to: '/entrar', search: sessionStore.loginSearch(location.href) });
     } else {

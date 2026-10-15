@@ -54,7 +54,8 @@ function CheckRow({
 }: {
   checked: boolean;
   label: string;
-  count: number;
+  /** null enquanto as facetas não chegaram (evita "(0)" durante o carregamento). */
+  count: number | null;
   boldCount: boolean;
   onChange: () => void;
 }) {
@@ -82,7 +83,9 @@ function CheckRow({
         </span>
         {label}
       </span>
-      <span className={cn('tabular-nums', boldCount && 'font-bold')}>({count})</span>
+      <span className={cn('tabular-nums', boldCount && 'font-bold')}>
+        {count === null ? <span aria-label="contagem carregando">(…)</span> : `(${count})`}
+      </span>
     </label>
   );
 }
@@ -120,7 +123,7 @@ export function CatalogFilters({ search, facets, onChange, className }: CatalogF
             <CheckRow
               key={collection.id}
               label={collection.name}
-              count={facets?.collections[collection.id] ?? 0}
+              count={facets ? (facets.collections[collection.id] ?? 0) : null}
               boldCount
               checked={search.collection?.includes(collection.id) ?? false}
               onChange={() =>
@@ -158,7 +161,7 @@ export function CatalogFilters({ search, facets, onChange, className }: CatalogF
             <CheckRow
               key={network.id}
               label={network.name}
-              count={facets?.networks[network.id] ?? 0}
+              count={facets ? (facets.networks[network.id] ?? 0) : null}
               boldCount={false}
               checked={search.network?.includes(network.id) ?? false}
               onChange={() => onChange({ network: toggle<NetworkId>(search.network, network.id) })}

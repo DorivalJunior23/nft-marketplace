@@ -32,11 +32,12 @@ A aplicação roda a partir de um checkout limpo, sem serviços privados nem bac
 
 ## Variáveis de ambiente
 
-| Variável            | Padrão | Uso                                                                                                                                             |
-| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `VITE_ENABLE_MOCKS` | `true` | Ativa a camada MSW (REST + Socket.IO). `.env.development` e `.env.production` já vêm com `true`, então o build de demonstração mantém os mocks. |
-| `VITE_API_URL`      | `/api` | Base das chamadas REST do Axios.                                                                                                                |
-| `VITE_SOCKET_URL`   | `/`    | Origem do Socket.IO (path fixo `/socket.io/`).                                                                                                  |
+| Variável             | Padrão    | Uso                                                                                                                                             |
+| -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_ENABLE_MOCKS`  | `true`    | Ativa a camada MSW (REST + Socket.IO). `.env.development` e `.env.production` já vêm com `true`, então o build de demonstração mantém os mocks. |
+| `VITE_API_URL`       | `/api`    | Base das chamadas REST do Axios.                                                                                                                |
+| `VITE_SOCKET_URL`    | `/`       | Origem do Socket.IO (path fixo `/socket.io/`).                                                                                                  |
+| `VITE_MOCK_SCENARIO` | `default` | Cenário inicial da simulação quando não há `?mock=` na URL nem escolha salva no navegador (ids em `src/mocks/scenarios.ts`).                    |
 
 Copie `.env.example` para `.env` para sobrescrever localmente. Nenhum segredo é necessário.
 

@@ -166,3 +166,12 @@
     display: none;
   }
 }
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

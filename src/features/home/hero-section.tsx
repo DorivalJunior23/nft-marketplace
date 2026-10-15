@@ -52,7 +52,12 @@ export function HeroSection() {
           </Button>
         </div>
         {slides.length > 1 ? (
-          <div className="flex justify-end gap-2" role="tablist" aria-label="Destaques do herói">
+          <div
+            className="flex justify-end -space-x-2"
+            role="tablist"
+            aria-label="Destaques do herói"
+          >
+            {/* Alvo de 24px (WCAG 2.5.8) em volta do ponto de 8px do Figma, sem mudar o espaçamento. */}
             {slides.map((slide, index) => (
               <button
                 key={slide.id}
@@ -61,11 +66,16 @@ export function HeroSection() {
                 aria-selected={index === carousel.index}
                 aria-label={`Destaque ${index + 1}: ${slide.name}`}
                 onClick={() => carousel.goTo(index)}
-                className={cn(
-                  'bg-primary size-2 rounded-full transition-opacity motion-reduce:transition-none',
-                  index === carousel.index ? 'opacity-100' : 'opacity-40 hover:opacity-70',
-                )}
-              />
+                className="focus-visible:ring-ring flex size-6 items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'bg-primary block size-2 rounded-full transition-opacity motion-reduce:transition-none',
+                    index === carousel.index ? 'opacity-100' : 'opacity-40 hover:opacity-70',
+                  )}
+                />
+              </button>
             ))}
           </div>
         ) : (

@@ -207,6 +207,17 @@ export function useCheckout() {
   /** Passo 2: cria o pedido com chave de idempotência; a mesma tentativa reutiliza a chave. */
   const confirm = useCallback(async () => {
     if (!selectedWallet || !snapshot) return;
+    // Só na primeira tentativa: após timeout o pedido já existe e a repetição replica pela chave
+    // (a própria criação altera a disponibilidade e muda o fingerprint).
+    if (quoteChanged && submit.status === 'idle') {
+      // Já sabemos que a cotação mudou: nem envia; fecha a revisão e pede nova confirmação.
+      setReviewOpen(false);
+      setSubmit({
+        status: 'error',
+        message: 'Preço, disponibilidade ou taxas mudaram. Revise a cotação e confirme novamente.',
+      });
+      return;
+    }
     const values = form.getValues();
     const body: CreateOrderRequest = {
       items: cartToQuoteLines(snapshot.cart),
@@ -292,7 +303,18 @@ export function useCheckout() {
         message: errorMessage(error, 'Não foi possível criar o pedido.'),
       });
     }
-  }, [snapshot, selectedWallet, form, couponCode, createOrder, queryClient, navigate, userId]);
+  }, [
+    snapshot,
+    selectedWallet,
+    quoteChanged,
+    submit.status,
+    form,
+    couponCode,
+    createOrder,
+    queryClient,
+    navigate,
+    userId,
+  ]);
 
   const acknowledgeQuote = useCallback(() => {
     if (!quote.data) return;

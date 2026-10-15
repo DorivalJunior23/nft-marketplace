@@ -24,6 +24,8 @@ interface ReviewDialogProps {
   network: string;
   email: string;
   submit: SubmitState;
+  /** A cotação revalidada mudou depois da revisão (evento em tempo real). */
+  quoteChanged?: boolean;
   onConfirm: () => void;
   triggerRef: RefObject<HTMLElement | null>;
 }
@@ -38,10 +40,13 @@ export function ReviewDialog({
   network,
   email,
   submit,
+  quoteChanged = false,
   onConfirm,
   triggerRef,
 }: ReviewDialogProps) {
   const busy = submit.status === 'submitting';
+  // Depois de um timeout o pedido já existe: a mudança de cotação vem da própria criação.
+  const showQuoteChanged = quoteChanged && submit.status === 'idle';
   const returnFocus = useReturnFocus(triggerRef);
   const walletName =
     WALLET_TYPES.find((type) => type.id === wallet?.walletType)?.name ?? wallet?.walletAlias ?? '';
@@ -106,7 +111,16 @@ export function ReviewDialog({
             <dd>{email}</dd>
           </div>
         </dl>
-        {submit.status === 'timeout' || submit.status === 'error' ? (
+        {showQuoteChanged ? (
+          <p
+            role="alert"
+            className="border-amber/60 bg-amber/10 text-cream rounded-[4px] border px-3 py-2 text-[13px] leading-4"
+            data-testid="review-quote-changed"
+          >
+            Preço, disponibilidade ou taxas mudaram enquanto você revisava. Volte para conferir os
+            novos valores antes de confirmar.
+          </p>
+        ) : submit.status === 'timeout' || submit.status === 'error' ? (
           <p
             role="alert"
             className="border-amber/60 bg-amber/10 text-cream rounded-[4px] border px-3 py-2 text-[13px] leading-4"
@@ -134,9 +148,11 @@ export function ReviewDialog({
           >
             {busy
               ? 'Enviando pedido…'
-              : submit.status === 'timeout'
-                ? 'Tentar novamente'
-                : 'Confirmar compra'}
+              : showQuoteChanged
+                ? 'Revisar novos valores'
+                : submit.status === 'timeout'
+                  ? 'Tentar novamente'
+                  : 'Confirmar compra'}
           </Button>
         </DialogFooter>
       </DialogContent>

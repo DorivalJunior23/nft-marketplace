@@ -59,19 +59,35 @@ function validateInput(body: Partial<WalletInput>): WalletInput {
   if (body.ensName && !ENS_PATTERN.test(body.ensName.toLowerCase()))
     details.ensName = ['Use letras minúsculas, números, hífen ou ponto.'];
   if (Object.keys(details).length) throw validationError(details);
+  const { kind, displayName, walletAlias, network, profileName, address, walletType } = body;
+  const { referralCode, email, ensName } = body;
+  // Os campos obrigatórios já foram validados acima; a checagem só estreita os tipos sem `!`.
+  if (
+    !kind ||
+    !displayName ||
+    !walletAlias ||
+    !network ||
+    !profileName ||
+    !address ||
+    !walletType ||
+    !referralCode ||
+    !email ||
+    !ensName
+  )
+    throw validationError({ form: ['Campos obrigatórios ausentes.'] });
   return {
-    kind: body.kind!,
-    displayName: body.displayName!.trim(),
-    walletAlias: body.walletAlias!.trim(),
-    network: body.network!,
-    profileName: body.profileName!.trim(),
-    address: body.address!.trim(),
+    kind,
+    displayName: displayName.trim(),
+    walletAlias: walletAlias.trim(),
+    network,
+    profileName: profileName.trim(),
+    address: address.trim(),
     secondaryAddress: body.secondaryAddress?.trim() || null,
-    walletType: body.walletType!,
-    referralCode: body.referralCode!.trim(),
-    email: body.email!.trim().toLowerCase(),
-    ensName: body
-      .ensName!.trim()
+    walletType,
+    referralCode: referralCode.trim(),
+    email: email.trim().toLowerCase(),
+    ensName: ensName
+      .trim()
       .toLowerCase()
       .replace(/\.eth$/, ''),
   };

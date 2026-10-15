@@ -209,6 +209,7 @@ function DesktopCheckout({ controller }: { controller: CheckoutController }) {
         network={network}
         email={email}
         submit={controller.submit}
+        quoteChanged={controller.quoteChanged}
         onConfirm={() => void controller.confirm()}
         triggerRef={payRef}
       />
@@ -408,6 +409,7 @@ function MobileCheckout({ controller }: { controller: CheckoutController }) {
         network={network}
         email={email}
         submit={controller.submit}
+        quoteChanged={controller.quoteChanged}
         onConfirm={() => void controller.confirm()}
         triggerRef={payRef}
       />

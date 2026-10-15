@@ -23,10 +23,11 @@ import {
   MobileNftCardSkeleton,
 } from '@/features/catalog/components/mobile-nft-card';
 import { Pagination } from '@/features/catalog/components/pagination';
-import { nftListOptions } from '@/features/catalog/queries';
+import { featuredOptions, nftListOptions } from '@/features/catalog/queries';
 import { toListQuery, type CatalogSearch } from '@/features/catalog/search-params';
 import { useCatalogSearch } from '@/features/catalog/use-catalog-search';
 import { useFavorites, useToggleFavorite } from '@/features/favorites/queries';
+import { useCarousel } from '@/hooks/use-carousel';
 import { useReturnFocus } from '@/hooks/use-return-focus';
 import { cn } from '@/lib/utils';
 
@@ -224,12 +225,25 @@ export function MobileHomePage({ search, route = '/' }: MobileHomePageProps) {
   );
 }
 
-/** Banner do topo mobile (366x190) sobre o fundo da página: gradiente e brilhos laranja (o retângulo cinza do Figma é só máscara), texto à esquerda e duas artes sobrepostas. */
+/**
+ * Banner do topo mobile (366x190) sobre o fundo da página: gradiente laranja 20→10 % e duas elipses
+ * com gradiente linear e borda nítida (o retângulo cinza do Figma é só máscara). É um carrossel dos
+ * mesmos destaques do desktop: a arte grande é o destaque atual e a pequena, o próximo; a cada
+ * 5 s (ou no toque na pequena) elas trocam de lugar.
+ */
 function MobileHeroBanner() {
+  const featured = useQuery(featuredOptions());
+  const slides = featured.data?.slides ?? [];
+  const carousel = useCarousel(slides.length);
+  const current = slides[carousel.index];
+  const next = slides[(carousel.index + 1) % Math.max(slides.length, 1)];
+  const advance = () => carousel.goTo((carousel.index + 1) % Math.max(slides.length, 1));
   return (
     <section
       aria-labelledby="hero-mobile"
       className="relative h-[190px] overflow-hidden rounded-[12px]"
+      onFocus={carousel.pause}
+      onBlur={carousel.resume}
     >
       <div
         aria-hidden="true"
@@ -237,11 +251,11 @@ function MobileHeroBanner() {
       />
       <span
         aria-hidden="true"
-        className="absolute -top-[31px] -left-20 size-[248px] rounded-full bg-[radial-gradient(circle,rgb(221_154_95/0.43),rgb(210_138_76/0.04)_70%)]"
+        className="absolute -top-[31px] -left-20 size-[248px] rounded-full bg-[linear-gradient(160deg,rgb(221_154_95/0.43),rgb(210_138_76/0.04))]"
       />
       <span
         aria-hidden="true"
-        className="absolute -top-[10px] left-[73px] size-[248px] rounded-full bg-[radial-gradient(circle,rgb(221_154_95/0.37),rgb(210_138_76/0)_70%)]"
+        className="absolute -top-[10px] left-[73px] size-[248px] rounded-full bg-[linear-gradient(160deg,rgb(221_154_95/0.37),rgb(210_138_76/0))]"
       />
       <div className="relative flex h-full flex-col justify-between px-4 pt-1.5 pb-1.5">
         <div className="flex items-start gap-2">
@@ -267,27 +281,90 @@ function MobileHeroBanner() {
               EXPLORAR <ArrowRightIcon className="text-primary size-4" />
             </Link>
           </div>
-          <div className="relative h-[146px] w-[138px] shrink-0">
-            <ArtworkImage
-              artwork="ape-emerald"
-              size={138}
-              alt=""
-              priority
-              className="size-[138px] rounded-[16px]"
-            />
-            <ArtworkImage
-              artwork="ape-sage"
-              size={58}
-              alt=""
-              className="absolute top-[88px] left-[14px] size-[58px] rounded-[16px]"
-            />
+          <div className="relative h-[146px] w-[138px] shrink-0" aria-live="polite">
+            {current ? (
+              <Link
+                to="/nft/$nftId"
+                params={{ nftId: current.id }}
+                aria-label={`Ver ${current.name}, NFT em destaque`}
+                className="focus-visible:ring-ring focus-visible:ring-offset-background block rounded-[16px] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
+                <ArtworkImage
+                  key={current.id}
+                  artwork={current.artwork}
+                  size={138}
+                  alt=""
+                  priority
+                  className="size-[138px] rounded-[16px] motion-safe:animate-[hero-fade_700ms_ease-out]"
+                />
+              </Link>
+            ) : (
+              <ArtworkImage
+                artwork="ape-emerald"
+                size={138}
+                alt=""
+                priority
+                className="size-[138px] rounded-[16px]"
+              />
+            )}
+            {next && slides.length > 1 ? (
+              <button
+                type="button"
+                onClick={advance}
+                aria-label={`Próximo destaque: ${next.name}`}
+                className="focus-visible:ring-ring focus-visible:ring-offset-background absolute top-[88px] left-[14px] block rounded-[16px] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
+                <ArtworkImage
+                  key={next.id}
+                  artwork={next.artwork}
+                  size={58}
+                  alt=""
+                  className="size-[58px] rounded-[16px] motion-safe:animate-[hero-fade_700ms_ease-out]"
+                />
+              </button>
+            ) : (
+              <ArtworkImage
+                artwork="ape-sage"
+                size={58}
+                alt=""
+                className="absolute top-[88px] left-[14px] size-[58px] rounded-[16px]"
+              />
+            )}
           </div>
         </div>
-        <div className="flex justify-center gap-1.5" aria-hidden="true">
-          <span className="bg-primary size-[7px] rounded-full" />
-          <span className="bg-primary size-[7px] rounded-full" />
-          <span className="bg-primary size-[7px] rounded-full" />
-        </div>
+        {slides.length > 1 ? (
+          <div
+            className="flex justify-center -space-x-[9px]"
+            role="tablist"
+            aria-label="Destaques do herói"
+          >
+            {slides.map((slide, index) => (
+              <button
+                key={slide.id}
+                type="button"
+                role="tab"
+                aria-selected={index === carousel.index}
+                aria-label={`Destaque ${index + 1}: ${slide.name}`}
+                onClick={() => carousel.goTo(index)}
+                className="focus-visible:ring-ring flex size-6 items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'bg-primary block size-[7px] rounded-full transition-opacity motion-reduce:transition-none',
+                    index === carousel.index ? 'opacity-100' : 'opacity-40',
+                  )}
+                />
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex justify-center gap-1.5" aria-hidden="true">
+            <span className="bg-primary size-[7px] rounded-full" />
+            <span className="bg-primary size-[7px] rounded-full" />
+            <span className="bg-primary size-[7px] rounded-full" />
+          </div>
+        )}
       </div>
     </section>
   );

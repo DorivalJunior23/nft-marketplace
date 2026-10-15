@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { USERS, addToCartViaApi, applyScenario, gotoApp, isMobile, login, mocks } from './helpers';
+import { USERS, addToCartViaApi, applyScenario, gotoApp, login, mocks } from './helpers';
 
 test.describe('Carrinho', () => {
   test('adicionar, alterar quantidade, remover, cupom e persistência após refresh', async ({
@@ -77,10 +77,6 @@ test.describe('Carrinho', () => {
   });
 
   test('disponibilidade limita a quantidade', async ({ page }) => {
-    test.skip(
-      isMobile(page),
-      'no mobile o stepper mantém o mesmo comportamento; verificado no desktop',
-    );
     await login(page, USERS.nova, '/nft/emerald-ape-0042');
     await page.getByRole('radio', { name: /Edição 1\/1\b/ }).click();
     await expect(page.getByRole('button', { name: 'Aumentar quantidade' })).toBeDisabled();
