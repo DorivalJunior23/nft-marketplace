@@ -60,7 +60,7 @@ export function ScenarioPanel() {
         ref={buttonRef}
         type="button"
         onClick={() => setOpen(true)}
-        className="border-border-soft bg-surface-dark text-text-accent shadow-float hover:border-primary focus-visible:ring-ring fixed bottom-4 left-4 z-40 flex h-9 items-center gap-2 rounded-full border px-3 text-[12px] font-bold focus-visible:ring-2 focus-visible:outline-none md:bottom-6 md:left-6"
+        className="border-border-soft bg-surface-dark text-text-accent shadow-float hover:border-primary focus-visible:ring-ring fixed right-4 bottom-[176px] z-40 flex h-9 items-center gap-2 rounded-full border px-3 text-[12px] font-bold focus-visible:ring-2 focus-visible:outline-none md:right-auto md:bottom-6 md:left-6"
         aria-label="Abrir painel de cenários da simulação"
         data-testid="scenario-panel-button"
       >

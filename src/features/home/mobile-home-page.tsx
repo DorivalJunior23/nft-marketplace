@@ -242,7 +242,7 @@ function MobileHeroBanner() {
             </div>
             <Link
               to="/mercado"
-              className="text-text-accent mt-1 flex items-center gap-2 text-[12px] leading-[14px] font-bold"
+              className="text-text-accent mt-1 -mb-3 flex min-h-11 items-center gap-2 text-[12px] leading-[14px] font-bold"
             >
               EXPLORAR <ArrowRightIcon className="text-primary size-4" />
             </Link>

@@ -23,6 +23,7 @@ function Rating({ average, count }: { average: number; count: number }) {
   const filled = Math.round(average);
   return (
     <div
+      role="img"
       className="flex items-center gap-1"
       aria-label={`Avaliação ${average} de 5, ${count} avaliações de colecionadores`}
     >
@@ -306,7 +307,12 @@ function DescriptionSection({ nft }: { nft: Nft }) {
 
 export function NftDetailSkeleton() {
   return (
-    <Container className="flex flex-col gap-24 pt-8" aria-busy="true" aria-label="Carregando NFT">
+    <Container
+      className="flex flex-col gap-24 pt-8"
+      role="status"
+      aria-busy="true"
+      aria-label="Carregando NFT"
+    >
       <div className="flex flex-col gap-3">
         <Shimmer className="h-4 w-36" />
         <div className="flex gap-8">
@@ -327,6 +333,20 @@ export function NftDetailSkeleton() {
             <Shimmer className="h-20 w-1/2" />
           </div>
         </div>
+      </div>
+      {/* Reserva a altura da descrição e dos relacionados: o rodapé não desloca quando os dados chegam. */}
+      <div className="flex flex-col gap-3">
+        <Shimmer className="h-7 w-1/3" />
+        <Shimmer className="h-[300px] w-full" />
+      </div>
+      <div className="flex flex-col gap-8">
+        <Shimmer className="h-7 w-48" />
+        <div className="flex justify-between gap-7">
+          {['a', 'b', 'c', 'd', 'e'].map((key) => (
+            <Shimmer key={key} className="h-[303px] w-[219px] rounded-none" />
+          ))}
+        </div>
+        <Shimmer className="mx-auto h-3 w-14" />
       </div>
     </Container>
   );

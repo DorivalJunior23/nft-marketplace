@@ -45,7 +45,8 @@ export function CatalogToolbar({
               onClick={() => onTabChange(item.id)}
               className={cn(
                 'hover:text-text-accent focus-visible:ring-ring focus-visible:ring-offset-background relative shrink-0 cursor-pointer leading-4 whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none',
-                compact ? 'text-[14px]' : 'text-[15px] font-medium',
+                // Área de toque de 44px sem alterar o layout (margens negativas compensam o padding).
+                compact ? '-my-3.5 py-3.5 text-[14px]' : 'text-[15px] font-medium',
                 active ? 'text-text-accent font-bold' : 'text-cream',
                 compact && !active && 'font-normal',
               )}

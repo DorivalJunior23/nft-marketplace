@@ -50,7 +50,12 @@ export function WalletsPage() {
   return (
     <AccountLayout title="Carteiras">
       {wallets.isPending ? (
-        <div className="flex flex-col gap-6" aria-busy="true" aria-label="Carregando carteiras">
+        <div
+          className="flex flex-col gap-6"
+          role="status"
+          aria-busy="true"
+          aria-label="Carregando carteiras"
+        >
           <Shimmer className="h-4 w-48" />
           <Shimmer className="h-10 w-full" />
           <Shimmer className="h-10 w-full" />

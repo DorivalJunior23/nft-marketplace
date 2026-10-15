@@ -361,7 +361,12 @@ export function ProfilePage() {
   return (
     <AccountLayout title="Dados do perfil">
       {profile.isPending ? (
-        <div className="flex flex-col gap-6" aria-busy="true" aria-label="Carregando perfil">
+        <div
+          className="flex flex-col gap-6"
+          role="status"
+          aria-busy="true"
+          aria-label="Carregando perfil"
+        >
           <Shimmer className="h-4 w-48" />
           <Shimmer className="h-10 w-full" />
           <Shimmer className="h-10 w-full" />

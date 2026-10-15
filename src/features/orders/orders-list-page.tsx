@@ -17,7 +17,12 @@ export function OrdersListPage() {
     <AccountLayout title="Atividade">
       <h1 className="text-cream text-[16px] leading-4 font-bold">Meus pedidos</h1>
       {orders.isPending ? (
-        <div className="flex flex-col gap-3" aria-busy="true" aria-label="Carregando pedidos">
+        <div
+          className="flex flex-col gap-3"
+          role="status"
+          aria-busy="true"
+          aria-label="Carregando pedidos"
+        >
           <Shimmer className="h-16 w-full" />
           <Shimmer className="h-16 w-full" />
         </div>

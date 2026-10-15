@@ -160,7 +160,7 @@ export function MobileNftDetailPage({ nft }: { nft: Nft }) {
 
 export function MobileNftDetailSkeleton() {
   return (
-    <div className="flex flex-col" aria-busy="true" aria-label="Carregando NFT">
+    <div className="flex flex-col" role="status" aria-busy="true" aria-label="Carregando NFT">
       <div className="h-[506px] bg-[linear-gradient(180deg,#241612,#2F1D15)] px-7 pt-[66px]">
         <Shimmer className="h-[356px] w-full rounded-[24px]" />
       </div>
@@ -168,6 +168,8 @@ export function MobileNftDetailSkeleton() {
         <Shimmer className="h-5 w-2/3" />
         <Shimmer className="h-16 w-full" />
         <Shimmer className="h-7 w-1/2" />
+        <Shimmer className="h-20 w-full" />
+        <Shimmer className="h-[220px] w-full" />
       </div>
     </div>
   );
