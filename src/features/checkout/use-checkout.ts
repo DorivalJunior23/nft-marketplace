@@ -326,8 +326,12 @@ export function useCheckout() {
     quoteChanged,
     acknowledgeQuote,
     blockingIssues,
+    // Enquanto perfil e carteiras não chegam, o formulário ainda não foi pré-preenchido: pagar esperaria.
     isPreparing:
-      connect.isPending || (quote.isFetching && connection.status === 'connected' && !reviewOpen),
+      profile.isPending ||
+      wallets.isPending ||
+      connect.isPending ||
+      (quote.isFetching && connection.status === 'connected' && !reviewOpen),
   };
 }
 
