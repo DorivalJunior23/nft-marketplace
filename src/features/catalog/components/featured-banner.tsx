@@ -13,7 +13,7 @@ export function FeaturedBanner() {
   return (
     <section
       aria-labelledby="destaque-titulo"
-      className="relative flex h-[470px] flex-col gap-4 overflow-hidden bg-[linear-gradient(180deg,rgb(210_138_76/0.10)_0%,rgb(210_138_76/0.03)_100%)] pt-6 pb-1"
+      className="relative flex flex-col gap-4 overflow-hidden bg-[linear-gradient(180deg,rgb(210_138_76/0.10)_0%,rgb(210_138_76/0.03)_100%)] pt-6 pb-1 xl:h-[470px]"
     >
       <div className="flex flex-col gap-4 px-5">
         <h2 id="destaque-titulo" className="text-text-accent text-[24px] leading-8 font-bold">
@@ -32,11 +32,11 @@ export function FeaturedBanner() {
             artwork={nft.artwork}
             size={310}
             alt=""
-            className="h-[368px] w-[310px] rounded-[22px]"
+            className="aspect-[310/368] h-auto w-full rounded-[22px]"
           />
         </Link>
       ) : (
-        <Shimmer className="h-[368px] w-[310px] rounded-[22px]" />
+        <Shimmer className="aspect-[310/368] w-full rounded-[22px]" />
       )}
       <span
         aria-hidden="true"

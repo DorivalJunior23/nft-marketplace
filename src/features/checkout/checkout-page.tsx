@@ -147,7 +147,7 @@ function DesktopCheckout({ controller }: { controller: CheckoutController }) {
           }
         />
       ) : (
-        <div className="flex gap-8">
+        <div className="flex flex-col gap-8 lg:flex-row">
           <form
             id="checkout-form"
             onSubmit={controller.startReview}
@@ -170,7 +170,7 @@ function DesktopCheckout({ controller }: { controller: CheckoutController }) {
               />
             </div>
           </form>
-          <aside className="flex w-[405px] shrink-0 flex-col gap-5">
+          <aside className="flex w-full flex-col gap-5 lg:w-[340px] lg:shrink-0 xl:w-[405px]">
             <OrderItemsSummary
               cart={cart.data}
               quote={quote.data}

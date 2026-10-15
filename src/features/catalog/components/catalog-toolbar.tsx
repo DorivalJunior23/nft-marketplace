@@ -28,7 +28,12 @@ export function CatalogToolbar({
 }: CatalogToolbarProps) {
   const current = NFT_SORT_OPTIONS.find((option) => option.id === sort) ?? NFT_SORT_OPTIONS[0]!;
   return (
-    <div className={cn('flex items-center justify-between', compact ? 'gap-4' : 'h-[18px]')}>
+    <div
+      className={cn(
+        'flex items-center justify-between',
+        compact ? 'gap-4' : 'flex-wrap gap-x-6 gap-y-5 xl:h-[18px] xl:flex-nowrap',
+      )}
+    >
       <div
         role="tablist"
         aria-label="Seções do catálogo"
@@ -69,10 +74,10 @@ export function CatalogToolbar({
       {compact ? null : (
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="text-cream hover:text-text-accent focus-visible:ring-ring focus-visible:ring-offset-background flex items-center gap-1 text-[15px] leading-5 transition-colors focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none"
+            className="text-cream hover:text-text-accent focus-visible:ring-ring focus-visible:ring-offset-background flex items-center gap-1 text-[15px] leading-5 whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none"
             aria-label={`Ordenar por: ${current.label}`}
           >
-            <span>Ordenar por:</span>
+            <span className="hidden xl:inline">Ordenar por:</span>
             <span>{current.label}</span>
             <ChevronDownIcon className="size-4" />
           </DropdownMenuTrigger>

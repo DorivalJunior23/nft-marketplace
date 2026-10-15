@@ -42,17 +42,17 @@ export function BlogSection() {
           Histórias, guias e insights para colecionadores sobre o universo da propriedade digital.
         </p>
       </div>
-      <ul className="flex w-full gap-6">
+      <ul className="grid w-full grid-cols-2 gap-6 lg:grid-cols-4 xl:flex">
         {POSTS.map((post) => (
           <li
             key={post.title}
-            className="bg-surface-card flex h-[369px] w-[268px] flex-col overflow-hidden rounded-[8px]"
+            className="bg-surface-card flex h-[369px] w-full max-w-[268px] flex-col overflow-hidden rounded-[8px] xl:w-[268px]"
           >
             <ArtworkImage
               artwork={post.artwork}
               size={268}
               alt=""
-              className="h-[195px] w-[268px] rounded-none object-top"
+              className="h-[195px] w-full rounded-none object-top xl:w-[268px]"
             />
             <div className="flex flex-1 flex-col gap-2 px-4 pt-3 pb-4">
               <p className="text-text-secondary h-8 text-[12px] leading-4 font-medium">

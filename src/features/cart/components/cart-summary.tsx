@@ -134,7 +134,10 @@ export function CartSummary({
     <section
       aria-labelledby="resumo-titulo"
       aria-busy={isLoading || isRefreshing || undefined}
-      className={cn('flex flex-col', variant === 'desktop' ? 'w-[332px] gap-6' : 'gap-3')}
+      className={cn(
+        'flex flex-col',
+        variant === 'desktop' ? 'w-full gap-6 lg:w-[300px] lg:shrink-0 xl:w-[332px]' : 'gap-3',
+      )}
       data-testid="cart-summary"
     >
       <h2

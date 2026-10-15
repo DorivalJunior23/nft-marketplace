@@ -95,7 +95,10 @@ export function AccountLayout({ title, children }: AccountLayoutProps) {
 
   return (
     <Container className="flex gap-7 pt-8">
-      <aside className="bg-surface-card h-fit w-[310px] shrink-0 py-2" aria-label="Menu da conta">
+      <aside
+        className="bg-surface-card h-fit w-[240px] shrink-0 py-2 lg:w-[260px] xl:w-[310px]"
+        aria-label="Menu da conta"
+      >
         <p className="text-cream px-2.5 py-2.5 text-[18px] leading-4 font-bold">Meu perfil</p>
         <nav aria-label="Seções da conta">
           <ul>

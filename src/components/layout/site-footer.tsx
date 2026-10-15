@@ -101,11 +101,11 @@ export function SiteFooter({ className }: { className?: string }) {
       </h2>
 
       <div className="bg-surface-card rounded-t-none p-8">
-        <div className="grid gap-7 md:grid-cols-[265px_1px_265px_1px_265px_1px_minmax(0,1fr)] md:gap-0">
+        <div className="grid gap-7 md:grid-cols-2 md:gap-x-4 md:gap-y-8 xl:grid-cols-[265px_1px_265px_1px_265px_1px_minmax(0,1fr)] xl:gap-0">
           {SERVICES.map((service, index) => (
             <div key={service.title} className="contents">
               {index > 0 ? (
-                <div aria-hidden="true" className="bg-primary hidden w-px md:block" />
+                <div aria-hidden="true" className="bg-primary hidden w-px xl:block" />
               ) : null}
               <div className="flex flex-col gap-3 px-4">
                 <div
@@ -121,7 +121,7 @@ export function SiteFooter({ className }: { className?: string }) {
               </div>
             </div>
           ))}
-          <div aria-hidden="true" className="bg-primary hidden w-px md:block" />
+          <div aria-hidden="true" className="bg-primary hidden w-px xl:block" />
           <div className="flex flex-col gap-3 px-4">
             <NewsletterForm />
             <p className="text-text-secondary text-[13px] leading-[22px]">
@@ -132,7 +132,7 @@ export function SiteFooter({ className }: { className?: string }) {
       </div>
 
       <div className="bg-surface-dark px-8 py-8">
-        <div className="text-cream grid items-center gap-4 text-[14px] leading-[22px] md:grid-cols-4 md:gap-[92px]">
+        <div className="text-cream grid items-center gap-4 text-[14px] leading-[22px] md:grid-cols-4 md:gap-8 xl:gap-[92px]">
           <BrandLogo />
           <p>
             Feito para colecionadores,
@@ -150,7 +150,7 @@ export function SiteFooter({ className }: { className?: string }) {
 
       <div className="flex flex-col gap-1.5">
         <div className="bg-surface-card p-8">
-          <div className="grid gap-8 md:grid-cols-[1fr_1fr_1fr_228px] md:gap-[124px]">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_228px] lg:gap-10 xl:gap-[124px]">
             <nav aria-labelledby="footer-perfil" className="flex flex-col gap-2">
               <h3 id="footer-perfil" className="text-cream text-[18px] leading-4 font-bold">
                 Meu perfil

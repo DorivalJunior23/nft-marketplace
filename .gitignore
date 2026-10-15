@@ -36,3 +36,4 @@ dist-ssr
 
 # Configuração local do editor/agente
 .claude/
+scratchpad/

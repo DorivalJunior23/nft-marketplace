@@ -18,13 +18,13 @@ export function HeroSection() {
   return (
     <section
       aria-labelledby="hero-titulo"
-      className="flex h-[450px] items-center justify-between gap-[110px] pl-10"
+      className="flex flex-col items-start gap-10 lg:h-[450px] lg:flex-row lg:items-center lg:justify-between lg:gap-12 xl:gap-[110px] xl:pl-10"
       onMouseEnter={carousel.pause}
       onMouseLeave={carousel.resume}
       onFocus={carousel.pause}
       onBlur={carousel.resume}
     >
-      <div className="flex w-[600px] shrink-0 flex-col gap-11">
+      <div className="flex w-full max-w-[600px] min-w-0 flex-col gap-11 lg:shrink-0 lg:basis-[52%] xl:basis-[600px]">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-1">
             <div className="flex flex-col gap-2">
@@ -33,7 +33,7 @@ export function HeroSection() {
               </p>
               <h1
                 id="hero-titulo"
-                className="text-cream text-[43px] leading-[70px] font-bold uppercase"
+                className="text-cream text-[36px] leading-[56px] font-bold uppercase xl:text-[43px] xl:leading-[70px]"
               >
                 Seja dono do futuro
                 <br />
@@ -78,7 +78,7 @@ export function HeroSection() {
       </div>
       {current ? (
         <div
-          className="relative size-[450px] shrink-0 overflow-hidden rounded-[24px]"
+          className="relative size-[360px] shrink-0 self-center overflow-hidden rounded-[24px] xl:size-[450px]"
           aria-live="polite"
         >
           {slides.map((slide, index) => (
@@ -99,7 +99,7 @@ export function HeroSection() {
                 size={450}
                 alt=""
                 priority={index === 0}
-                className="size-[450px] rounded-[24px]"
+                className="size-full rounded-[24px]"
               />
             </Link>
           ))}
@@ -108,12 +108,12 @@ export function HeroSection() {
         <button
           type="button"
           onClick={() => void featured.refetch()}
-          className="bg-surface-card text-text-secondary hover:text-text-accent flex size-[450px] shrink-0 items-center justify-center rounded-[24px] text-[14px]"
+          className="bg-surface-card text-text-secondary hover:text-text-accent flex size-[360px] shrink-0 items-center justify-center self-center rounded-[24px] text-[14px] xl:size-[450px]"
         >
           Não foi possível carregar o destaque. Tentar novamente
         </button>
       ) : (
-        <Shimmer className="size-[450px] shrink-0 rounded-[24px]" />
+        <Shimmer className="size-[360px] shrink-0 self-center rounded-[24px] xl:size-[450px]" />
       )}
     </section>
   );

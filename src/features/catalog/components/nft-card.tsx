@@ -34,7 +34,7 @@ export function NftCard({ nft, priority = false, className }: NftCardProps) {
           size={250}
           alt=""
           priority={priority}
-          className="mx-auto size-[250px] rounded-[15px] transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transition-none"
+          className="mx-auto aspect-square h-auto w-full max-w-[250px] rounded-[15px] transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transition-none"
         />
         {nft.rarity === 'raro' ? (
           <span className="bg-primary text-ink absolute top-6 left-4 px-2 py-[7px] text-[13px] leading-4 font-medium">

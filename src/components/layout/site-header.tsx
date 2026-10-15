@@ -53,11 +53,11 @@ export function SiteHeader({
   return (
     <header className={cn('relative', divider && 'border-primary/30 border-b')}>
       <div className="flex h-[45px] items-center justify-between">
-        <BrandLogo className="w-40" />
+        <BrandLogo className="w-32 shrink-0 lg:w-40" />
 
         <nav
           aria-label="Navegação principal"
-          className="mr-auto ml-[216px] flex h-full items-start gap-10"
+          className="mr-auto ml-8 flex h-full items-start gap-6 lg:ml-16 lg:gap-10 xl:ml-[216px]"
         >
           {NAV_ITEMS.map((item) => {
             const active = item.match(pathname);
@@ -83,7 +83,7 @@ export function SiteHeader({
           })}
         </nav>
 
-        <div className="flex h-[35px] items-center gap-7">
+        <div className="flex h-[35px] shrink-0 items-center gap-4 lg:gap-7">
           <button
             ref={searchTriggerRef}
             type="button"
@@ -116,7 +116,7 @@ export function SiteHeader({
               <DropdownMenuTrigger asChild>
                 <Button
                   size="compact"
-                  className="max-w-[200px] gap-2 pr-3 pl-1.5"
+                  className="max-w-[200px] gap-2 pr-1.5 pl-1.5 lg:pr-3"
                   aria-label={`Conta de ${user.displayName}`}
                 >
                   {user.avatarUrl ? (
@@ -126,7 +126,9 @@ export function SiteHeader({
                       <UserIcon className="size-4" />
                     </span>
                   )}
-                  <span className="truncate">{user.displayName.split(' ')[0]}</span>
+                  <span className="hidden truncate lg:inline">
+                    {user.displayName.split(' ')[0]}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-[200px]">

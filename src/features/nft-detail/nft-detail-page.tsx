@@ -24,7 +24,7 @@ function Rating({ average, count }: { average: number; count: number }) {
   return (
     <div
       role="img"
-      className="flex items-center gap-1"
+      className="flex min-w-0 flex-wrap items-center gap-1"
       aria-label={`Avaliação ${average} de 5, ${count} avaliações de colecionadores`}
     >
       {[1, 2, 3, 4, 5].map((star) => (
@@ -116,22 +116,25 @@ function RelatedSection({ nftId }: { nftId: string }) {
         </h2>
       </div>
       <div className="flex flex-col items-center gap-8">
-        <ul className="flex w-full justify-between gap-7">
+        <ul className="grid w-full grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between">
           {(related.data ?? Array.from({ length: 5 }, () => null)).map((item, index) => (
-            <li key={item?.id ?? index} className="flex w-[219px] flex-col gap-3">
+            <li
+              key={item?.id ?? index}
+              className="flex w-full max-w-[219px] flex-col gap-3 xl:w-[219px]"
+            >
               {item ? (
                 <>
                   <Link
                     to="/nft/$nftId"
                     params={{ nftId: item.id }}
-                    className="bg-surface-card focus-visible:ring-ring focus-visible:ring-offset-background block h-[255px] w-[219px] px-1 pt-5 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                    className="bg-surface-card focus-visible:ring-ring focus-visible:ring-offset-background block aspect-[219/255] w-full px-1 pt-5 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none xl:aspect-auto xl:h-[255px]"
                     aria-label={`${item.name}, ver detalhes`}
                   >
                     <ArtworkImage
                       artwork={item.artwork}
                       size={212}
                       alt=""
-                      className="mx-auto size-[212px] rounded-[13px]"
+                      className="mx-auto aspect-square h-auto w-full max-w-[212px] rounded-[13px] xl:size-[212px]"
                     />
                   </Link>
                   <div className="flex flex-col">
@@ -189,14 +192,14 @@ export function NftDetailPage({ nft }: { nft: Nft }) {
             Mercado
           </Link>
         </nav>
-        <div className="flex gap-8">
+        <div className="flex flex-col gap-8 lg:flex-row">
           <NftGallery name={nft.name} gallery={nft.gallery} />
           <div className="flex min-h-[448px] flex-1 flex-col justify-between gap-5">
             <div className="border-primary/30 flex flex-col gap-3 border-b pb-3">
               <h1 id="nft-titulo" className="text-cream text-[28px] leading-[37px] font-bold">
                 {nft.name}
               </h1>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-4">
                 <EthPrice
                   value={nft.price}
                   compareAt={nft.compareAtPrice}
@@ -315,14 +318,14 @@ export function NftDetailSkeleton() {
     >
       <div className="flex flex-col gap-3">
         <Shimmer className="h-4 w-36" />
-        <div className="flex gap-8">
-          <div className="flex w-[573px] shrink-0 items-center gap-7">
-            <div className="flex w-[100px] flex-col gap-4">
+        <div className="flex flex-col gap-8 lg:flex-row">
+          <div className="flex w-full max-w-[573px] items-center gap-5 lg:w-[460px] lg:shrink-0 lg:gap-7 xl:w-[573px]">
+            <div className="flex w-[80px] shrink-0 flex-col gap-4 xl:w-[100px]">
               {['a', 'b', 'c', 'd'].map((key) => (
-                <Shimmer key={key} className="size-[100px] rounded-[8px]" />
+                <Shimmer key={key} className="size-[80px] rounded-[8px] xl:size-[100px]" />
               ))}
             </div>
-            <Shimmer className="size-[444px] rounded-[6px]" />
+            <Shimmer className="aspect-square min-w-0 flex-1 rounded-[6px] xl:size-[444px] xl:flex-none" />
           </div>
           <div className="flex flex-1 flex-col gap-6">
             <Shimmer className="h-9 w-2/3" />
@@ -341,9 +344,12 @@ export function NftDetailSkeleton() {
       </div>
       <div className="flex flex-col gap-8">
         <Shimmer className="h-7 w-48" />
-        <div className="flex justify-between gap-7">
+        <div className="grid grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between">
           {['a', 'b', 'c', 'd', 'e'].map((key) => (
-            <Shimmer key={key} className="h-[303px] w-[219px] rounded-none" />
+            <Shimmer
+              key={key}
+              className="aspect-[219/303] w-full max-w-[219px] rounded-none xl:h-[303px] xl:w-[219px]"
+            />
           ))}
         </div>
         <Shimmer className="mx-auto h-3 w-14" />

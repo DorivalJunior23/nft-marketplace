@@ -28,17 +28,17 @@ const PROMOS: ReadonlyArray<{
 /** Cards promocionais do Figma: 586x250, arte à esquerda, texto alinhado à direita e arcos decorativos. */
 export function PromoSection() {
   return (
-    <section aria-label="Promoções" className="flex justify-between gap-7">
+    <section aria-label="Promoções" className="grid gap-7 lg:grid-cols-2">
       {PROMOS.map((promo) => (
         <article
           key={promo.tab}
-          className="bg-surface-card relative h-[250px] w-[586px] overflow-hidden rounded-[8px]"
+          className="bg-surface-card relative h-[250px] w-full max-w-[586px] overflow-hidden rounded-[8px]"
         >
           <ArtworkImage
             artwork={promo.artwork}
             size={292}
             alt=""
-            className="absolute top-0 -left-[5px] h-[250px] w-[292px] rounded-[18px]"
+            className="absolute top-0 -left-[5px] h-[250px] w-[45%] max-w-[292px] rounded-[18px]"
           />
           <span
             aria-hidden="true"
@@ -48,7 +48,7 @@ export function PromoSection() {
             aria-hidden="true"
             className="border-primary absolute top-[134px] -left-[199px] size-[256px] rounded-full border"
           />
-          <div className="absolute top-[37px] right-[30px] flex w-[263px] flex-col items-end gap-[9px] text-right">
+          <div className="absolute top-[37px] right-[30px] flex w-[calc(50%-30px)] max-w-[263px] flex-col items-end gap-[9px] text-right">
             <h2 className="text-cream text-[18px] leading-6 font-bold whitespace-pre-line">
               {promo.title}
             </h2>

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { gotoApp, isMobile } from './helpers';
+import { USERS, addToCartViaApi, gotoApp, isMobile, login } from './helpers';
 
 test.describe('Acessibilidade', () => {
   test('skip link, navegação por teclado e foco visível', async ({ page }) => {
@@ -56,13 +56,23 @@ test.describe('Acessibilidade', () => {
   });
 
   test('sem overflow horizontal nas larguras avaliadas', async ({ page }) => {
-    for (const path of ['/', '/nft/emerald-ape-0042', '/carrinho', '/entrar']) {
-      await gotoApp(page, path);
-      await expect(page.getByRole('main')).toBeVisible();
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      );
-      expect(overflow, `overflow em ${path}`).toBe(false);
+    // Desktop: além dos 1440 do Figma, cobre tablet e notebooks (768, 1024, 1180, 1280).
+    const widths = isMobile(page) ? [390] : [768, 1024, 1180, 1280, 1440];
+    const routes = ['/', '/mercado', '/nft/emerald-ape-0042', '/carrinho', '/entrar', '/perfil'];
+    await login(page, USERS.nova, '/');
+    await addToCartViaApi(page, 'emerald-ape-0042', '1-50', 1);
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const path of routes) {
+        await gotoApp(page, path);
+        await expect(page.getByRole('main')).toBeVisible();
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        );
+        expect(overflow, `overflow de ${overflow}px em ${path} a ${width}px`).toBeLessThanOrEqual(
+          1,
+        );
+      }
     }
   });
 });

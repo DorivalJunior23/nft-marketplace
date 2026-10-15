@@ -25,7 +25,10 @@ export function FavoritesPage() {
       <h1 className="text-cream text-[16px] leading-4 font-bold">Lista de interesse</h1>
       {favorites.isPending ? (
         <ul
-          className={cn('grid gap-6', isDesktop ? 'grid-cols-3 gap-x-8' : 'grid-cols-2 gap-x-4')}
+          className={cn(
+            'grid gap-6',
+            isDesktop ? 'grid-cols-2 gap-x-8 xl:grid-cols-3' : 'grid-cols-2 gap-x-4',
+          )}
           aria-label="Carregando favoritos"
         >
           {['a', 'b', 'c'].map((key) => (
@@ -51,7 +54,12 @@ export function FavoritesPage() {
           }
         />
       ) : (
-        <ul className={cn('grid gap-8', isDesktop ? 'grid-cols-3 gap-x-8' : 'grid-cols-2 gap-x-4')}>
+        <ul
+          className={cn(
+            'grid gap-8',
+            isDesktop ? 'grid-cols-2 gap-x-8 xl:grid-cols-3' : 'grid-cols-2 gap-x-4',
+          )}
+        >
           {details.map((detail, index) => {
             const id = ids[index]!;
             if (!detail.data) {

@@ -35,11 +35,15 @@ export function CatalogSection({ search, route, showFeatured = false }: CatalogS
   const isRefreshing = list.isFetching && !isInitialLoading;
 
   return (
-    <section id="mercado" aria-labelledby="catalogo-titulo" className="flex scroll-mt-6 gap-12">
+    <section
+      id="mercado"
+      aria-labelledby="catalogo-titulo"
+      className="flex scroll-mt-6 gap-8 xl:gap-12"
+    >
       <h2 id="catalogo-titulo" className="sr-only">
         Catálogo de NFTs
       </h2>
-      <aside className="flex w-[310px] shrink-0 flex-col gap-6">
+      <aside className="flex w-[240px] shrink-0 flex-col gap-6 lg:w-[260px] xl:w-[310px]">
         <CatalogFilters search={search} facets={list.data?.facets} onChange={setFilters} />
         {showFeatured ? <FeaturedBanner /> : null}
       </aside>
@@ -69,7 +73,10 @@ export function CatalogSection({ search, route, showFeatured = false }: CatalogS
           </p>
 
           {isInitialLoading ? (
-            <ul className="grid grid-cols-3 gap-x-8 gap-y-[72px]" aria-label="Carregando catálogo">
+            <ul
+              className="grid grid-cols-2 gap-x-8 gap-y-[72px] xl:grid-cols-3"
+              aria-label="Carregando catálogo"
+            >
               {SKELETON_KEYS.map((key) => (
                 <li key={key}>
                   <NftCardSkeleton />
@@ -97,7 +104,7 @@ export function CatalogSection({ search, route, showFeatured = false }: CatalogS
               }
             />
           ) : (
-            <ul className="grid grid-cols-3 gap-x-8 gap-y-[72px]">
+            <ul className="grid grid-cols-2 gap-x-8 gap-y-[72px] xl:grid-cols-3">
               {list.data?.items.map((nft, index) => (
                 <li key={nft.id} className="flex justify-start">
                   <NftCard nft={nft} priority={index < 3} />

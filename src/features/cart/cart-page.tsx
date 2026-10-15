@@ -63,13 +63,13 @@ function CartRow({
   return (
     <li
       className={cn(
-        'bg-surface-card grid h-[70px] grid-cols-[250px_1fr_1fr_1fr_24px] items-center pr-6',
+        'bg-surface-card grid h-[70px] grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_24px] items-center gap-x-3 pr-6 xl:grid-cols-[250px_1fr_1fr_1fr_24px] xl:gap-x-0',
         busy && 'opacity-70',
       )}
       aria-busy={busy || undefined}
       data-testid="cart-item"
     >
-      <div className="flex h-full items-center gap-4">
+      <div className="flex h-full min-w-0 items-center gap-4">
         <Link
           to="/nft/$nftId"
           params={{ nftId: item.nftId }}
@@ -82,8 +82,8 @@ function CartRow({
             className="size-[70px] rounded-[6px]"
           />
         </Link>
-        <div className="flex flex-col gap-1.5">
-          <h3 className="text-cream text-[16px] leading-4 font-bold">
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <h3 className="text-cream truncate text-[16px] leading-4 font-bold">
             <Link
               to="/nft/$nftId"
               params={{ nftId: item.nftId }}
@@ -142,22 +142,25 @@ function RelatedStrip() {
       >
         Colecionadores também viram
       </h2>
-      <ul className="flex justify-between gap-7">
+      <ul className="grid grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between">
         {(related.data ?? Array.from({ length: 5 }, () => null)).map((item, index) => (
-          <li key={item?.id ?? index} className="flex w-[219px] flex-col gap-3">
+          <li
+            key={item?.id ?? index}
+            className="flex w-full max-w-[219px] flex-col gap-3 xl:w-[219px]"
+          >
             {item ? (
               <>
                 <Link
                   to="/nft/$nftId"
                   params={{ nftId: item.id }}
-                  className="bg-surface-card focus-visible:ring-ring block h-[255px] w-[219px] px-1 pt-5 focus-visible:ring-2 focus-visible:outline-none"
+                  className="bg-surface-card focus-visible:ring-ring block aspect-[219/255] w-full px-1 pt-5 focus-visible:ring-2 focus-visible:outline-none xl:aspect-auto xl:h-[255px]"
                   aria-label={`${item.name}, ver detalhes`}
                 >
                   <ArtworkImage
                     artwork={item.artwork}
                     size={212}
                     alt=""
-                    className="mx-auto size-[212px] rounded-[13px]"
+                    className="mx-auto aspect-square h-auto w-full max-w-[212px] rounded-[13px] xl:size-[212px]"
                   />
                 </Link>
                 <div className="flex flex-col">
@@ -168,7 +171,7 @@ function RelatedStrip() {
                 </div>
               </>
             ) : (
-              <Shimmer className="h-[255px] w-[219px] rounded-none" />
+              <Shimmer className="aspect-[219/255] w-full rounded-none xl:h-[255px]" />
             )}
           </li>
         ))}
@@ -202,10 +205,10 @@ function DesktopCart() {
         <h1 id="carrinho-titulo" className="sr-only">
           Carrinho de NFTs
         </h1>
-        <div className="flex justify-between gap-8">
-          <div className="flex w-[782px] flex-col gap-3">
+        <div className="flex flex-col justify-between gap-8 lg:flex-row">
+          <div className="flex min-w-0 flex-1 flex-col gap-3 xl:w-[782px] xl:flex-none">
             <div
-              className="border-primary/30 text-cream grid grid-cols-[250px_1fr_1fr_1fr_24px] border-b pr-6 pb-3 text-[16px] leading-4"
+              className="border-primary/30 text-cream grid grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_24px] gap-x-3 border-b pr-6 pb-3 text-[16px] leading-4 xl:grid-cols-[250px_1fr_1fr_1fr_24px] xl:gap-x-0"
               role="presentation"
             >
               <span className="font-bold">NFTs</span>
