@@ -43,7 +43,7 @@ Base `/api`. Erros têm corpo único `{ type, message, details? }` com `details`
 
 ### Idempotência dos pedidos
 
-- O cliente gera uma chave por tentativa e a guarda em `sessionStorage` junto com o hash do conteúdo (itens, cupom, carteira, rede). Clique repetido, reenvio após timeout ou refresh reutilizam a chave enquanto o conteúdo for o mesmo.
+- O cliente gera uma chave por tentativa e a guarda em `sessionStorage` junto com o hash do conteúdo (itens, cupom, carteira, rede) e o id do usuário. Clique repetido, reenvio após timeout ou refresh reutilizam a chave enquanto o conteúdo e o usuário forem os mesmos.
 - A simulação guarda `chave → (usuário, hash, pedido)`. Mesma chave com o mesmo conteúdo devolve o mesmo pedido (200); conteúdo diferente responde `idempotency_conflict`; chave de outro usuário responde `forbidden`.
 - Antes de criar, a simulação recalcula a cotação e compara o `fingerprint` enviado: diferença responde `quote_outdated`; item indisponível responde `availability_conflict`. Ao criar, as unidades são reservadas; se o pedido for recusado, elas voltam.
 
@@ -71,14 +71,14 @@ Transporte: `socket.io-client` com `transports: ['websocket']`, path `/socket.io
 
 - `ws.link` do MSW mais `@mswjs/socket.io-binding` fazem o handshake do Engine.IO e codificam os pacotes do Socket.IO. O MSW remove o prefixo `/socket.io/` da URL antes de casar o padrão, por isso o handler casa a raiz da origem; em desenvolvimento o HMR do Vite foi movido para `/__vite_hmr` para não colidir.
 - Limitações documentadas: só WebSocket (sem long-polling), sem namespaces, salas nem ACKs; a binding não envia pings, então o handler mantém o heartbeat (`2`) a cada 20 s para o cliente não encerrar por timeout; a autenticação é lida do pacote `40{...}` enviado pelo cliente.
-- Qualquer mudança nos dados simulados passa pelos serviços, que persistem no `localStorage` e publicam no barramento interno; o handler entrega aos clientes conectados. O painel e a API `window.__kurio.mocks` chamam esses mesmos serviços: nada é disparado diretamente na UI.
+- Qualquer mudança nos dados simulados passa pelos serviços, que persistem no `localStorage` e publicam no barramento interno; o handler entrega aos clientes conectados. O painel e a API `window.__kurio.mocks` chamam esses mesmos serviços: nada é disparado diretamente na UI. O `db.snapshot()` dessa API omite hashes e salts de senha, sessões e chaves de idempotência.
 
 ## Política de sessão
 
 - Token opaco (`sess_…`) com validade definida pelo cenário (12 h por padrão, 20 s em `session-expiring`), guardado em `localStorage` com o usuário. Ao abrir o app, a sessão persistida é validada em `GET /auth/session`.
-- O interceptor do Axios envia `Authorization: Bearer`; um 401 fora dos endpoints de login e cadastro encerra a sessão com motivo `expired`. `SessionSync` avisa e, em rota privada, leva ao login com `redirect` para a rota atual.
+- O interceptor do Axios envia `Authorization: Bearer`; um 401 fora dos endpoints de login e cadastro encerra a sessão com motivo `expired`, mas só se a requisição recusada levava o token atual: respostas atrasadas de uma sessão anterior (ou sem token) não derrubam um login feito depois. Consultas privadas (`useProfile`, `useWallets`, `useOrders`) ficam desligadas sem sessão. Em rota privada, `SessionSync` leva ao login com `redirect` para a rota atual e `motivo=sessao-expirada`, e a tela de login mostra o aviso; em rota pública, o aviso é um toast.
 - Rotas privadas (`/perfil`, `/carteiras`, `/favoritos`, `/pedidos`, `/pagamento`) usam `beforeLoad` com redirect para `/entrar?redirect=…`. Após autenticar, o app volta à rota de origem (apenas caminhos internos).
-- Logout e troca de usuário: `POST /auth/logout`, limpeza total do cache do Query, novo id de carrinho de visitante e reconexão do socket sem credenciais. Chaves privadas incluem o id do usuário (`['favorites', userId]`, `['cart', 'user:<id>']`), o que também isola dados por conta.
+- Logout e troca de usuário: `POST /auth/logout`, limpeza total do cache do Query e do estado privado da aba (rascunho do checkout, chave de idempotência e cupom em `sessionStorage`), novo id de carrinho de visitante e reconexão do socket sem credenciais. Chaves privadas incluem o id do usuário (`['favorites', userId]`, `['cart', 'user:<id>']`), o que também isola dados por conta. O rascunho do checkout grava o id do dono e é ignorado por qualquer outro usuário, mesmo que a sessão tenha expirado sem logout.
 - Senhas: hash SHA-256 com salt no banco simulado; nunca em claro nem em logs.
 
 ## Estado do carrinho

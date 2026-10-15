@@ -13,6 +13,8 @@ import { sessionStore, useCurrentUser } from './session-store';
 interface AuthPageProps {
   mode: 'login' | 'register';
   redirect?: string;
+  /** Chegou aqui porque a sessão expirou numa rota privada (`?motivo=sessao-expirada`). */
+  sessionExpired?: boolean;
 }
 
 const COPY = {
@@ -27,6 +29,17 @@ const COPY = {
 } as const;
 
 /** Destino após autenticar: a rota de origem (quando segura) ou o início. */
+function SessionExpiredNotice() {
+  return (
+    <p
+      role="status"
+      className="border-primary/40 bg-primary/10 text-cream rounded-[6px] border px-4 py-3 text-[13px] leading-5"
+    >
+      Sua sessão expirou. Entre novamente para continuar de onde parou.
+    </p>
+  );
+}
+
 function safeRedirect(redirect?: string): string {
   if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) return '/';
   if (redirect.startsWith('/entrar') || redirect.startsWith('/cadastro')) return '/';
@@ -37,7 +50,7 @@ function safeRedirect(redirect?: string): string {
  * Login e cadastro. No desktop, o Figma mostra um modal sobre a Início; no mobile, uma tela própria.
  * Em ambos a rota é real (`/entrar`, `/cadastro`), então refresh e acesso direto funcionam.
  */
-export function AuthPage({ mode, redirect }: AuthPageProps) {
+export function AuthPage({ mode, redirect, sessionExpired = false }: AuthPageProps) {
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
   const user = useCurrentUser();
@@ -66,6 +79,7 @@ export function AuthPage({ mode, redirect }: AuthPageProps) {
         >
           {mode === 'login' ? 'Entrar' : 'Criar perfil de colecionador'}
         </h1>
+        {sessionExpired ? <SessionExpiredNotice /> : null}
         {mode === 'login' ? (
           <LoginForm variant="mobile" onSuccess={finish} />
         ) : (
@@ -121,7 +135,8 @@ export function AuthPage({ mode, redirect }: AuthPageProps) {
               {COPY[mode].description}
             </DialogDescription>
           </div>
-          <div className="px-20 pt-6">
+          <div className="flex flex-col gap-4 px-20 pt-6">
+            {sessionExpired ? <SessionExpiredNotice /> : null}
             {mode === 'login' ? (
               <LoginForm variant="modal" onSuccess={finish} />
             ) : (

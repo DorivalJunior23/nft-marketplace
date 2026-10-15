@@ -4,6 +4,8 @@ const DRAFT_KEY = 'kurio.checkout.draft';
 const IDEMPOTENCY_KEY = 'kurio.checkout.idempotency';
 
 export interface CheckoutDraft {
+  /** Dono do rascunho: outro usuário na mesma aba nunca o enxerga. */
+  userId: string;
   values: Partial<CollectorFormValues>;
   walletId: string | null;
   savedAt: string;
@@ -27,15 +29,22 @@ function write(key: string, value: unknown): void {
   }
 }
 
-/** Rascunho do checkout: preserva o contexto se a sessão expirar ou a página recarregar. */
+/**
+ * Rascunho do checkout: preserva o contexto se a sessão expirar ou a página recarregar.
+ * Fica vinculado ao usuário; um rascunho de outro usuário é descartado na leitura.
+ */
 export const checkoutDraft = {
-  read: () => read<CheckoutDraft>(DRAFT_KEY),
+  read(userId: string): CheckoutDraft | null {
+    const draft = read<CheckoutDraft>(DRAFT_KEY);
+    return draft && draft.userId === userId ? draft : null;
+  },
   write: (draft: Omit<CheckoutDraft, 'savedAt'>) =>
     write(DRAFT_KEY, { ...draft, savedAt: new Date().toISOString() }),
   clear: () => write(DRAFT_KEY, null),
 };
 
 interface IdempotencyRecord {
+  userId: string;
   key: string;
   payloadHash: string;
 }
@@ -45,11 +54,12 @@ interface IdempotencyRecord {
  * chave é reutilizada (clique repetido, timeout, refresh); conteúdo novo gera chave nova.
  */
 export const idempotencyStore = {
-  keyFor(payloadHash: string): string {
+  keyFor(userId: string, payloadHash: string): string {
     const current = read<IdempotencyRecord>(IDEMPOTENCY_KEY);
-    if (current && current.payloadHash === payloadHash) return current.key;
+    if (current && current.userId === userId && current.payloadHash === payloadHash)
+      return current.key;
     const key = crypto.randomUUID();
-    write(IDEMPOTENCY_KEY, { key, payloadHash } satisfies IdempotencyRecord);
+    write(IDEMPOTENCY_KEY, { userId, key, payloadHash } satisfies IdempotencyRecord);
     return key;
   },
   clear: () => write(IDEMPOTENCY_KEY, null),

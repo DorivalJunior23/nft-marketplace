@@ -38,6 +38,7 @@ export interface KurioMocksApi {
   };
   session: { expireAll: () => void };
   socket: { dropConnections: () => number; connectionCount: () => number };
+  /** Cópia do banco sem credenciais: usuários sem hash/salt, sem sessões nem chaves de idempotência. */
   db: { snapshot: () => unknown };
 }
 
@@ -64,7 +65,25 @@ export function installDevApi(): KurioMocksApi {
     orders: { settle: settleOrder, republish: republishOrder, listForUser: listOrders },
     session: { expireAll: expireAllSessions },
     socket: { dropConnections: dropSocketConnections, connectionCount: socketConnectionCount },
-    db: { snapshot: () => structuredClone(getDb()) },
+    db: {
+      snapshot: () => {
+        const db = structuredClone(getDb());
+        return {
+          nfts: db.nfts,
+          favorites: db.favorites,
+          carts: db.carts,
+          wallets: db.wallets,
+          orders: db.orders,
+          users: db.users.map((user) => ({
+            id: user.id,
+            email: user.email,
+            displayName: user.displayName,
+            username: user.username,
+            avatarUrl: user.avatarUrl,
+          })),
+        };
+      },
+    },
   };
   window.__kurio = { mocks: api };
   return api;

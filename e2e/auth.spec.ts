@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { USERS, gotoApp, isMobile, login, mocks, applyScenario } from './helpers';
+import { USERS, addToCartViaApi, applyScenario, gotoApp, isMobile, login, mocks } from './helpers';
 
 test.describe('Conta e sessão', () => {
   test('cadastro cria sessão e conflito de e-mail é tratado', async ({ page }) => {
@@ -71,5 +71,49 @@ test.describe('Conta e sessão', () => {
       page.getByRole('status').filter({ hasText: 'Nenhum NFT favoritado ainda' }),
     ).toBeVisible();
     await expect(page.getByTestId('nft-card')).toHaveCount(0);
+  });
+
+  test('rascunho do pagamento e cupom não passam para o próximo usuário da aba', async ({
+    page,
+  }) => {
+    await login(page, USERS.nova, '/');
+    await addToCartViaApi(page, 'emerald-ape-0042', '1-50', 1);
+    await gotoApp(page, '/pagamento');
+    if (isMobile(page)) await page.getByText('Dados do colecionador').click();
+    const note = page.getByLabel('Observação do colecionador (opcional)');
+    await note.fill('Segredo da Nova');
+    await expect(note).toHaveValue('Segredo da Nova');
+    await expect
+      .poll(() => page.evaluate(() => window.sessionStorage.getItem('kurio.checkout.draft')))
+      .toContain('Segredo da Nova');
+    await gotoApp(page, '/carrinho');
+    await page.getByTestId('coupon-input').fill('KURIO10');
+    await page.getByRole('button', { name: 'Aplicar' }).click();
+    await expect(page.getByTestId('summary-discount')).not.toHaveText(/0\.00/);
+    expect(await page.evaluate(() => window.sessionStorage.getItem('kurio.coupon'))).toBe(
+      'KURIO10',
+    );
+
+    await gotoApp(page, '/favoritos');
+    if (isMobile(page)) {
+      await page.getByRole('button', { name: 'Sair' }).click();
+    } else {
+      await page.getByTestId('logout-button').click();
+    }
+    await expect(page).toHaveURL(/\/$/);
+    expect(
+      await page.evaluate(() =>
+        Object.keys(window.sessionStorage).filter((key) => key.startsWith('kurio.')),
+      ),
+    ).toEqual([]);
+
+    await login(page, USERS.caio, '/');
+    await addToCartViaApi(page, 'violet-nomad-0314', '1-50', 1);
+    await gotoApp(page, '/pagamento');
+    await expect(page.getByLabel('Nome de exibição')).toHaveValue('Caio Lima');
+    if (isMobile(page)) await page.getByText('Dados do colecionador').click();
+    await expect(page.getByLabel('Observação do colecionador (opcional)')).toHaveValue('');
+    await expect(page.getByTestId('checkout-item')).toHaveCount(1);
+    await expect(page.getByText('KURIO10')).toHaveCount(0);
   });
 });

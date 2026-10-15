@@ -31,9 +31,14 @@ export function SessionSync() {
 
   useEffect(() => {
     if (endedReason !== 'expired') return;
-    toast.warning('Sua sessão expirou. Entre novamente para continuar de onde parou.');
     if (isPrivatePath(location.pathname)) {
-      void navigate({ to: '/entrar', search: { redirect: location.href } });
+      // O aviso fica na própria tela de login (via URL), que preserva a rota de origem.
+      void navigate({
+        to: '/entrar',
+        search: { redirect: location.href, motivo: 'sessao-expirada' },
+      });
+    } else {
+      toast.warning('Sua sessão expirou. Entre novamente para continuar de onde parou.');
     }
     sessionStore.clearEndedReason();
   }, [endedReason, location.pathname, location.href, navigate]);

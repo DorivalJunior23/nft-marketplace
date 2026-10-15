@@ -31,7 +31,7 @@ export function useOrder(orderId: string) {
 
 export function useOrders() {
   const user = useCurrentUser();
-  return useQuery(ordersListOptions(user?.id ?? 'anonymous'));
+  return useQuery({ ...ordersListOptions(user?.id ?? 'anonymous'), enabled: user !== null });
 }
 
 export function isTerminal(order: Order | undefined): boolean {

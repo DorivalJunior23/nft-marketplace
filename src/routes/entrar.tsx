@@ -4,11 +4,16 @@ import { z } from 'zod';
 import { AuthPage } from '@/features/auth/auth-page';
 
 export const Route = createFileRoute('/entrar')({
-  validateSearch: z.object({ redirect: z.string().optional().catch(undefined) }),
+  validateSearch: z.object({
+    redirect: z.string().optional().catch(undefined),
+    motivo: z.enum(['sessao-expirada']).optional().catch(undefined),
+  }),
   component: LoginRoute,
 });
 
 function LoginRoute() {
-  const { redirect } = Route.useSearch();
-  return <AuthPage mode="login" redirect={redirect} />;
+  const { redirect, motivo } = Route.useSearch();
+  return (
+    <AuthPage mode="login" redirect={redirect} sessionExpired={motivo === 'sessao-expirada'} />
+  );
 }

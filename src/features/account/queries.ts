@@ -30,16 +30,21 @@ export const walletsOptions = (userId: string) =>
     staleTime: 60_000,
   });
 
+const ANONYMOUS = 'anonymous';
+
 function useUserId(): string {
-  return useCurrentUser()?.id ?? 'anonymous';
+  return useCurrentUser()?.id ?? ANONYMOUS;
 }
 
+/** Sem sessão a consulta fica desligada: nada de requisição sem token (e 401 inútil). */
 export function useProfile() {
-  return useQuery(profileOptions(useUserId()));
+  const userId = useUserId();
+  return useQuery({ ...profileOptions(userId), enabled: userId !== ANONYMOUS });
 }
 
 export function useWallets() {
-  return useQuery(walletsOptions(useUserId()));
+  const userId = useUserId();
+  return useQuery({ ...walletsOptions(userId), enabled: userId !== ANONYMOUS });
 }
 
 function syncSessionUser(profile: Profile): void {

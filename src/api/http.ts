@@ -97,9 +97,14 @@ http.interceptors.response.use(
   (error: AxiosError<ApiErrorBody>) => {
     const clientError = toClientError(error);
     const path = error.config?.url ?? '';
+    // Só encerra a sessão se o 401 recusou o token atual: respostas atrasadas de uma sessão
+    // anterior (ou sem token) não podem derrubar um login feito depois.
+    const sentToken = String(error.config?.headers?.Authorization ?? '');
+    const currentToken = sessionStore.getToken();
     if (
       clientError.isUnauthorized &&
-      sessionStore.isAuthenticated() &&
+      currentToken !== null &&
+      sentToken === `Bearer ${currentToken}` &&
       !PUBLIC_401_PATHS.some((p) => path.endsWith(p))
     ) {
       sessionStore.end('expired');

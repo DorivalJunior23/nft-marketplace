@@ -19,7 +19,11 @@ import { orderKeys } from '@/features/orders/queries';
 import { errorMessage } from '@/lib/error-message';
 import { applyApiErrors } from '@/lib/form-errors';
 
+import { useCurrentUser } from '@/features/auth/session-store';
+
 import { checkoutDraft, hashPayload, idempotencyStore } from './checkout-storage';
+
+const ANONYMOUS = 'anonymous';
 import { collectorSchema, type CollectorFormValues } from './schemas';
 
 export type ConnectionState =
@@ -84,7 +88,8 @@ export function useCheckout() {
   const couponCode = useCouponCode();
   const quote = useQuote(ownerId, cart.data, couponCode, 'checkout');
 
-  const draft = useMemo(() => checkoutDraft.read(), []);
+  const userId = useCurrentUser()?.id ?? ANONYMOUS;
+  const draft = useMemo(() => checkoutDraft.read(userId), [userId]);
   const [chosenWalletId, setWalletId] = useState<string | null>(draft?.walletId ?? null);
   const [connection, setConnection] = useState<ConnectionState>({ status: 'idle' });
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -105,20 +110,25 @@ export function useCheckout() {
   const walletId = chosenWalletId ?? primary?.id ?? null;
   const selectedWallet = wallets.data?.find((wallet) => wallet.id === walletId) ?? primary;
 
+  const watched = useWatch({ control: form.control });
   // Pré-preenche o formulário uma única vez com perfil + carteira selecionada (ou o rascunho salvo).
   useEffect(() => {
     if (prefilled.current || !profile.data || !wallets.data) return;
     prefilled.current = true;
     const wallet = wallets.data.find((item) => item.id === walletId) ?? primary;
-    form.reset(valuesFrom(profile.data, wallet, draft?.values ?? {}));
+    // O que o usuário já digitou antes do perfil chegar tem prioridade sobre o pré-preenchimento.
+    const typed = Object.fromEntries(
+      Object.entries(form.getValues()).filter(([, value]) => value !== ''),
+    ) as Partial<CollectorFormValues>;
+    form.reset(valuesFrom(profile.data, wallet, { ...draft?.values, ...typed }));
   }, [profile.data, wallets.data, walletId, primary, form, draft]);
 
   // Rascunho: qualquer alteração é guardada para sobreviver a refresh e expiração de sessão.
-  const watched = useWatch({ control: form.control });
   useEffect(() => {
-    if (!prefilled.current) return;
-    checkoutDraft.write({ values: watched as Partial<CollectorFormValues>, walletId });
-  }, [watched, walletId]);
+    // Sem sessão (expirou durante o preenchimento) nada é gravado: o rascunho segue do dono.
+    if (!prefilled.current || userId === ANONYMOUS) return;
+    checkoutDraft.write({ userId, values: watched as Partial<CollectorFormValues>, walletId });
+  }, [watched, walletId, userId]);
 
   const selectWallet = useCallback(
     (wallet: Wallet) => {
@@ -130,9 +140,9 @@ export function useCheckout() {
       form.setValue('secondaryAddress', wallet.secondaryAddress ?? '');
       form.setValue('ensName', wallet.ensName);
       form.setValue('profileName', wallet.profileName);
-      checkoutDraft.write({ values: form.getValues(), walletId: wallet.id });
+      checkoutDraft.write({ userId, values: form.getValues(), walletId: wallet.id });
     },
-    [form],
+    [form, userId],
   );
 
   const connect = useMutation({
@@ -221,6 +231,7 @@ export function useCheckout() {
       },
     };
     const key = idempotencyStore.keyFor(
+      userId,
       hashPayload({
         items: body.items,
         couponCode: body.couponCode,
@@ -283,7 +294,7 @@ export function useCheckout() {
         message: errorMessage(error, 'Não foi possível criar o pedido.'),
       });
     }
-  }, [snapshot, selectedWallet, form, couponCode, createOrder, queryClient, navigate]);
+  }, [snapshot, selectedWallet, form, couponCode, createOrder, queryClient, navigate, userId]);
 
   const acknowledgeQuote = useCallback(() => {
     if (!quote.data) return;
