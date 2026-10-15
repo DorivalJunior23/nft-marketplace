@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { USERS, addToCartViaApi, gotoApp, isMobile, login } from './helpers';
+import { USERS, addToCartViaApi, applyScenario, gotoApp, isMobile, login, mocks } from './helpers';
 
 test.describe('Carrinho', () => {
   test('adicionar, alterar quantidade, remover, cupom e persistência após refresh', async ({
@@ -61,6 +61,19 @@ test.describe('Carrinho', () => {
     await gotoApp(page, '/carrinho');
     await expect(page.getByTestId('cart-item')).toHaveCount(1);
     await expect(page.getByTestId('cart-item').first()).toContainText('Golden Beat #0207');
+  });
+
+  test('sem conexão o carrinho mostra erro e recupera ao tentar novamente', async ({ page }) => {
+    await applyScenario(page, 'offline');
+    await gotoApp(page, '/carrinho');
+    await expect(page.getByRole('alert')).toContainText('Não foi possível carregar o carrinho', {
+      timeout: 20_000,
+    });
+    await mocks(page).setScenario('default');
+    await page.getByRole('button', { name: 'Tentar novamente' }).click();
+    await expect(
+      page.getByRole('status').filter({ hasText: 'Seu carrinho está vazio' }),
+    ).toBeVisible();
   });
 
   test('disponibilidade limita a quantidade', async ({ page }) => {

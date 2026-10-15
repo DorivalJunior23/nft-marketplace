@@ -142,7 +142,7 @@ function RelatedStrip() {
       >
         Colecionadores também viram
       </h2>
-      <ul className="grid grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between">
+      <ul className="grid grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between lg:[&>li:nth-child(4)]:flex lg:[&>li:nth-child(5)]:hidden [&>li:nth-child(n+4)]:hidden xl:[&>li:nth-child(n+4)]:flex">
         {(related.data ?? Array.from({ length: 5 }, () => null)).map((item, index) => (
           <li
             key={item?.id ?? index}

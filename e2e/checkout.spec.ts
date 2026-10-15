@@ -87,35 +87,110 @@ test.describe('Compra', () => {
     expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(1);
   });
 
+  // Relógio falso: o timeout do cliente (8 s) e a liquidação (12 s) são avançados sem esperar de verdade.
   test('timeout após criar o pedido é recuperado pela chave de idempotência', async ({ page }) => {
-    test.setTimeout(90_000);
     await startCheckout(page, 'order-timeout');
+    await page.clock.install();
     await page.getByTestId('pay-button').click();
     await page.getByTestId('confirm-order-button').click();
     const dialog = page.getByTestId('review-dialog');
-    await expect(dialog.getByRole('alert')).toContainText('demorou mais que o esperado', {
-      timeout: 20_000,
-    });
+    await expect(dialog.getByTestId('confirm-order-button')).toBeDisabled();
+    await page.clock.runFor(8_500);
+    await expect(dialog.getByRole('alert')).toContainText('demorou mais que o esperado');
     expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(1);
     await dialog.getByRole('button', { name: 'Tentar novamente' }).click();
     await expect(page).toHaveURL(/\/pedidos\/ord_/);
     await expect(page.getByTestId('order-status')).toHaveText('Pendente');
-    await expect(page.getByTestId('order-status')).toHaveText('Confirmado', { timeout: 20_000 });
+    await page.clock.runFor(4_000);
+    await expect(page.getByTestId('order-status')).toHaveText('Confirmado');
     expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(1);
   });
 
   test('evento de confirmação recupera o pedido sem clique após o timeout', async ({ page }) => {
-    test.setTimeout(90_000);
     await startCheckout(page, 'order-timeout');
+    await page.clock.install();
     await page.getByTestId('pay-button').click();
     await page.getByTestId('confirm-order-button').click();
     const dialog = page.getByTestId('review-dialog');
-    await expect(dialog.getByRole('alert')).toContainText('demorou mais que o esperado', {
-      timeout: 20_000,
-    });
+    await expect(dialog.getByTestId('confirm-order-button')).toBeDisabled();
+    await page.clock.runFor(8_500);
+    await expect(dialog.getByRole('alert')).toContainText('demorou mais que o esperado');
     // Sem clicar em nada: o order.updated da confirmação reenvia com a mesma chave e navega.
-    await expect(page).toHaveURL(/\/pedidos\/ord_/, { timeout: 20_000 });
+    await page.clock.runFor(4_000);
+    await expect(page).toHaveURL(/\/pedidos\/ord_/);
     await expect(page.getByTestId('order-status')).toHaveText('Confirmado');
+    expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(1);
+  });
+
+  test('carteira recusada impede a revisão e permite tentar de novo', async ({ page }) => {
+    await startCheckout(page, 'wallet-rejected');
+    await page.getByTestId('pay-button').click();
+    await expect(page.getByTestId('connection-status')).toContainText('recusada');
+    await expect(page.getByTestId('review-dialog')).toHaveCount(0);
+    expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(0);
+
+    await mocks(page).setScenario('default');
+    await page.getByTestId('pay-button').click();
+    await expect(page.getByTestId('review-dialog')).toBeVisible();
+    await expect(page.getByTestId('connection-status')).toContainText('Carteira conectada');
+  });
+
+  test('a mesma chave de idempotência com outro conteúdo responde 409', async ({ page }) => {
+    await login(page, USERS.nova, '/');
+    await addToCartViaApi(page, 'emerald-ape-0042', '1-50', 1);
+    const result = await page.evaluate(async () => {
+      const session = window.localStorage.getItem('kurio.session');
+      const token = session ? (JSON.parse(session) as { token: string }).token : '';
+      const headers = { 'content-type': 'application/json', authorization: `Bearer ${token}` };
+      const items = [{ nftId: 'emerald-ape-0042', editionId: '1-50', quantity: 1 }];
+      const quote = (await (
+        await fetch('/api/quote?context=checkout', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ items, couponCode: null }),
+        })
+      ).json()) as { fingerprint: string };
+      const body = {
+        items,
+        couponCode: null,
+        quoteFingerprint: quote.fingerprint,
+        walletId: 'wal_nova_primary',
+        network: 'ethereum',
+        collector: {
+          displayName: 'Nova Sato',
+          username: 'novasato',
+          profileName: 'Nova Sato',
+          email: 'nova.sato@kurio.app',
+          network: 'ethereum',
+          walletAddress: '0xA91F3c2B7e4d5F6a8B9c0D1e2F3a4B5c6D7eE82C',
+          walletType: 'metamask',
+          referralCode: 'KURIO-NOVA',
+          ensName: 'nova.kurio',
+        },
+      };
+      const key = crypto.randomUUID();
+      const post = (payload: unknown) =>
+        fetch('/api/orders', {
+          method: 'POST',
+          headers: { ...headers, 'idempotency-key': key },
+          body: JSON.stringify(payload),
+        });
+      const first = await post(body);
+      const replay = await post(body);
+      const conflict = await post({ ...body, couponCode: 'KURIO10' });
+      return {
+        first: first.status,
+        replay: replay.status,
+        conflict: conflict.status,
+        conflictType: ((await conflict.json()) as { type: string }).type,
+      };
+    });
+    expect(result).toEqual({
+      first: 201,
+      replay: 200,
+      conflict: 409,
+      conflictType: 'idempotency_conflict',
+    });
     expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(1);
   });
 

@@ -43,6 +43,23 @@ test.describe('Acessibilidade', () => {
     await expect(trigger).toBeFocused();
   });
 
+  test('Sheet de filtros no mobile prende o foco, fecha com Escape e devolve o foco', async ({
+    page,
+  }) => {
+    test.skip(!isMobile(page), 'o Sheet de filtros é a composição mobile');
+    await gotoApp(page, '/');
+    const trigger = page.getByRole('button', { name: /Abrir filtros/ });
+    await trigger.click();
+    const sheet = page.getByRole('dialog', { name: 'Filtros' });
+    await expect(sheet).toBeVisible();
+    await expect(sheet.locator(':focus')).toHaveCount(1);
+    for (let i = 0; i < 6; i++) await page.keyboard.press('Tab');
+    await expect(sheet.locator(':focus')).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
+
   test('validação de formulário associa mensagens aos campos', async ({ page }) => {
     await gotoApp(page, '/entrar');
     const form = page.getByRole('form', { name: 'Entrar na conta' });

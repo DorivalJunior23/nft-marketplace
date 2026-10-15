@@ -8,6 +8,7 @@ import { EthPrice } from '@/components/common/eth-price';
 import { Shimmer } from '@/components/common/shimmer';
 import { HeartIcon, LinkedinIcon, ShareIcon, StarIcon, TwitterIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { Nft } from '@/contracts';
 import { useRequireAuth } from '@/features/auth/use-require-auth';
 import { nftRelatedOptions } from '@/features/catalog/queries';
@@ -116,7 +117,7 @@ function RelatedSection({ nftId }: { nftId: string }) {
         </h2>
       </div>
       <div className="flex flex-col items-center gap-8">
-        <ul className="grid w-full grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between">
+        <ul className="grid w-full grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between lg:[&>li:nth-child(4)]:flex lg:[&>li:nth-child(5)]:hidden [&>li:nth-child(n+4)]:hidden xl:[&>li:nth-child(n+4)]:flex">
           {(related.data ?? Array.from({ length: 5 }, () => null)).map((item, index) => (
             <li
               key={item?.id ?? index}
@@ -272,38 +273,60 @@ export function NftDetailPage({ nft }: { nft: Nft }) {
   );
 }
 
+const DESCRIPTION_TAB_CLASS =
+  'group/tab text-cream data-[state=active]:text-text-accent focus-visible:ring-ring relative h-auto flex-none rounded-none border-0 bg-transparent px-0 pt-0 pb-3 text-[17px] leading-4 font-normal shadow-none data-[state=active]:bg-transparent data-[state=active]:font-bold data-[state=active]:shadow-none focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none';
+
+/** Abas do Figma: "Detalhes do NFT" e "Avaliações de colecionadores" (sem avaliações individuais na demonstração). */
 function DescriptionSection({ nft }: { nft: Nft }) {
   return (
     <section aria-labelledby="descricao-titulo" className="flex flex-col gap-3">
-      <div className="border-primary/30 relative flex gap-8 border-b">
-        <h2
-          id="descricao-titulo"
-          className="text-text-accent relative pb-3 text-[17px] leading-4 font-bold"
+      <h2 id="descricao-titulo" className="sr-only">
+        Detalhes e avaliações
+      </h2>
+      <Tabs defaultValue="detalhes" className="gap-3">
+        <TabsList
+          aria-label="Detalhes e avaliações"
+          className="border-primary/30 h-auto w-full justify-start gap-8 rounded-none border-b bg-transparent p-0 group-data-[orientation=horizontal]/tabs:h-auto"
         >
-          Detalhes do NFT
-          <span aria-hidden="true" className="bg-primary absolute inset-x-0 -bottom-px h-[3px]" />
-        </h2>
-        <p className="text-cream text-[17px] leading-4">
-          Avaliações de colecionadores ({nft.rating.count})
-        </p>
-      </div>
-      <div className="flex flex-col gap-3 text-[14px] leading-6">
-        <p className="text-text-secondary whitespace-pre-line">{nft.description}</p>
-        <dl className="flex flex-col gap-3">
-          <div>
-            <dt className="text-cream font-bold">Rede:</dt>
-            <dd className="text-text-secondary">{nft.networkNote}</dd>
-          </div>
-          <div>
-            <dt className="text-cream font-bold">Contrato:</dt>
-            <dd className="text-text-secondary">{nft.contractNote}</dd>
-          </div>
-          <div>
-            <dt className="text-cream font-bold">Direitos autorais:</dt>
-            <dd className="text-text-secondary">{nft.royaltyNote}</dd>
-          </div>
-        </dl>
-      </div>
+          <TabsTrigger value="detalhes" className={DESCRIPTION_TAB_CLASS}>
+            Detalhes do NFT
+            <span
+              aria-hidden="true"
+              className="bg-primary absolute inset-x-0 -bottom-px h-[3px] opacity-0 group-data-[state=active]/tab:opacity-100"
+            />
+          </TabsTrigger>
+          <TabsTrigger value="avaliacoes" className={DESCRIPTION_TAB_CLASS}>
+            Avaliações de colecionadores ({nft.rating.count})
+            <span
+              aria-hidden="true"
+              className="bg-primary absolute inset-x-0 -bottom-px h-[3px] opacity-0 group-data-[state=active]/tab:opacity-100"
+            />
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="avaliacoes" className="text-[14px] leading-6">
+          <p className="text-text-secondary">
+            Nota média {nft.rating.average.toFixed(1)} de 5 em {nft.rating.count} avaliações. As
+            avaliações individuais não estão disponíveis nesta demonstração.
+          </p>
+        </TabsContent>
+        <TabsContent value="detalhes" className="flex flex-col gap-3 text-[14px] leading-6">
+          <p className="text-text-secondary whitespace-pre-line">{nft.description}</p>
+          <dl className="flex flex-col gap-3">
+            <div>
+              <dt className="text-cream font-bold">Rede:</dt>
+              <dd className="text-text-secondary">{nft.networkNote}</dd>
+            </div>
+            <div>
+              <dt className="text-cream font-bold">Contrato:</dt>
+              <dd className="text-text-secondary">{nft.contractNote}</dd>
+            </div>
+            <div>
+              <dt className="text-cream font-bold">Direitos autorais:</dt>
+              <dd className="text-text-secondary">{nft.royaltyNote}</dd>
+            </div>
+          </dl>
+        </TabsContent>
+      </Tabs>
     </section>
   );
 }
@@ -344,7 +367,7 @@ export function NftDetailSkeleton() {
       </div>
       <div className="flex flex-col gap-8">
         <Shimmer className="h-7 w-48" />
-        <div className="grid grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between">
+        <div className="grid grid-cols-3 gap-7 lg:grid-cols-4 xl:flex xl:justify-between lg:[&>:nth-child(4)]:block lg:[&>:nth-child(5)]:hidden [&>:nth-child(n+4)]:hidden xl:[&>:nth-child(n+4)]:block">
           {['a', 'b', 'c', 'd', 'e'].map((key) => (
             <Shimmer
               key={key}

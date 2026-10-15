@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { gotoApp, isMobile, applyScenario } from './helpers';
+import { applyScenario, gotoApp, isMobile } from './helpers';
 
 test.describe('Catálogo', () => {
   test('busca, filtros combinados, ordenação e paginação ficam na URL e voltam pelo histórico', async ({
@@ -51,6 +51,32 @@ test.describe('Catálogo', () => {
     if (isMobile(page)) await page.getByRole('button', { name: /Abrir filtros/ }).click();
     await expect(page.getByLabel(/Música/)).toBeChecked();
     await expect(page.getByLabel(/Jogos/)).toBeChecked();
+  });
+
+  test('respostas fora de ordem não sobrescrevem a busca atual', async ({ page }) => {
+    await applyScenario(page, 'jitter');
+    await gotoApp(page, '/mercado');
+    await expect(page.getByTestId('nft-card').first()).toBeVisible({ timeout: 20_000 });
+    const search = async (term: string) => {
+      if (isMobile(page)) {
+        const box = page.getByRole('searchbox');
+        await box.fill(term);
+        await box.press('Enter');
+      } else {
+        await page.getByRole('button', { name: 'Buscar NFTs' }).click();
+        const box = page.getByRole('dialog', { name: 'Buscar NFTs' }).getByRole('searchbox');
+        await box.fill(term);
+        await box.press('Enter');
+      }
+    };
+    // Duas buscas em sequência rápida: a resposta da primeira pode chegar depois da segunda.
+    await search('Golden');
+    await search('Violet');
+    await expect(page).toHaveURL(/q=Violet/);
+    await expect(page.getByTestId('nft-card').first()).toContainText('Violet', { timeout: 20_000 });
+    await expect(page.getByTestId('nft-card').filter({ hasText: 'Golden' })).toHaveCount(0);
+    await page.waitForTimeout(3_000);
+    await expect(page.getByTestId('nft-card').filter({ hasText: 'Golden' })).toHaveCount(0);
   });
 
   test('busca por texto e resultado vazio com limpeza de filtros', async ({ page }) => {
