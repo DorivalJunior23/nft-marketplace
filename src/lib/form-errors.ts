@@ -22,5 +22,6 @@ export function applyApiErrors<T extends FieldValues>(
       }
     }
   }
-  return applied && error.type === 'validation_error' ? null : error.message;
+  // Com erro aplicado ao campo, a mensagem geral seria redundante.
+  return applied ? null : error.message;
 }

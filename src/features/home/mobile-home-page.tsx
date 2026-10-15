@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { useId, useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type FormEvent } from 'react';
 
 import { ArtworkImage } from '@/components/common/artwork-image';
 import { EmptyState, ErrorState } from '@/components/common/query-state';
@@ -24,6 +24,7 @@ import { Pagination } from '@/features/catalog/components/pagination';
 import { nftListOptions } from '@/features/catalog/queries';
 import { toListQuery, type CatalogSearch } from '@/features/catalog/search-params';
 import { useCatalogSearch } from '@/features/catalog/use-catalog-search';
+import { useReturnFocus } from '@/hooks/use-return-focus';
 import { cn } from '@/lib/utils';
 
 interface MobileHomePageProps {
@@ -42,6 +43,8 @@ export function MobileHomePage({ search, route = '/' }: MobileHomePageProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [term, setTerm] = useState(search.q ?? '');
   const searchId = useId();
+  const filterButtonRef = useRef<HTMLButtonElement>(null);
+  const returnFocus = useReturnFocus(filterButtonRef);
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -75,6 +78,7 @@ export function MobileHomePage({ search, route = '/' }: MobileHomePageProps) {
           />
         </form>
         <button
+          ref={filterButtonRef}
           type="button"
           onClick={() => setFiltersOpen(true)}
           className="text-ink focus-visible:ring-ring focus-visible:ring-offset-background relative flex size-[45px] shrink-0 items-center justify-center rounded-[14px] bg-[linear-gradient(180deg,rgb(210_138_76/0.45),#D28A4C)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
@@ -164,6 +168,7 @@ export function MobileHomePage({ search, route = '/' }: MobileHomePageProps) {
       <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
         <SheetContent
           side="bottom"
+          onCloseAutoFocus={returnFocus}
           className="border-border bg-surface-card text-cream max-h-[88dvh] overflow-y-auto p-0"
         >
           <SheetHeader className="px-5 pt-5">

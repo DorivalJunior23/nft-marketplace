@@ -1,5 +1,5 @@
 import { useRouterState } from '@tanstack/react-router';
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 
 import { Container } from '@/components/common/container';
 import { Toaster } from '@/components/ui/sonner';
@@ -30,6 +30,7 @@ export function AppShell({ children }: AppShellProps) {
   const cartCount = useCartCount();
   const logout = useLogout();
   const [searchOpen, setSearchOpen] = useState(false);
+  const searchTriggerRef = useRef<HTMLButtonElement>(null);
 
   return (
     <div className="bg-background flex min-h-dvh flex-col">
@@ -46,6 +47,7 @@ export function AppShell({ children }: AppShellProps) {
             divider={DIVIDER_ROUTES.has(pathname)}
             cartCount={cartCount}
             onOpenSearch={() => setSearchOpen(true)}
+            searchTriggerRef={searchTriggerRef}
             onLogout={() => logout.mutate()}
           />
         </Container>
@@ -63,7 +65,7 @@ export function AppShell({ children }: AppShellProps) {
 
       <SessionSync />
       <ScenarioPanel />
-      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} triggerRef={searchTriggerRef} />
       <Toaster position={isDesktop ? 'bottom-right' : 'top-center'} closeButton />
     </div>
   );

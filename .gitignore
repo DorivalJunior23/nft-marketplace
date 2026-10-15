@@ -23,10 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# Ambiente
+# Ambiente (os .env.development e .env.production versionados não têm segredos)
 .env
-.env.*
-!.env.example
+.env.local
+.env.*.local
 
 # Testes e auditorias
 /test-results/

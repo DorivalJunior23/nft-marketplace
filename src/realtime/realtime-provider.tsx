@@ -11,6 +11,7 @@ import type {
 } from '@/contracts';
 import { cartKeys } from '@/features/cart/queries';
 import { catalogKeys } from '@/features/catalog/queries';
+import { mulEth } from '@/lib/money';
 import { useSessionState } from '@/features/auth/session-store';
 
 import {
@@ -70,6 +71,7 @@ function applyNftUpdate(
         nft: { ...item.nft, price, compareAtPrice, totalAvailable, version: event.version },
         edition,
         unitPrice: price,
+        lineTotal: mulEth(price, item.quantity),
       };
     });
     return { ...current, items };

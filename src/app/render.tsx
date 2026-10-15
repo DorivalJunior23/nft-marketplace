@@ -14,6 +14,8 @@ import { createAppRouter } from './router';
  */
 export function renderApp(): void {
   const queryClient = createQueryClient();
+  // Exposto para inspeção nos testes E2E (cache de consultas); não é usado pela aplicação.
+  (window as Window & { __kurioQueryClient?: unknown }).__kurioQueryClient = queryClient;
   const router = createAppRouter(queryClient);
 
   const rootElement = document.getElementById('root');

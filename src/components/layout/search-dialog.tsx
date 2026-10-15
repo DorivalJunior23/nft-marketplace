@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { useId, useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent, type RefObject } from 'react';
 
 import { SearchIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -10,15 +10,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useReturnFocus } from '@/hooks/use-return-focus';
 
 interface SearchDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  triggerRef: RefObject<HTMLElement | null>;
 }
 
 /** Busca global: envia o termo para o catálogo (`/mercado?q=`), reiniciando a paginação. */
-export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
+export function SearchDialog({ open, onOpenChange, triggerRef }: SearchDialogProps) {
   const navigate = useNavigate();
+  const returnFocus = useReturnFocus(triggerRef);
   const inputId = useId();
   const [term, setTerm] = useState('');
 
@@ -31,7 +34,10 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-surface-card text-cream max-w-[520px] gap-6 p-8">
+      <DialogContent
+        onCloseAutoFocus={returnFocus}
+        className="border-border bg-surface-card text-cream max-w-[520px] gap-6 p-8"
+      >
         <DialogHeader className="gap-2 text-left">
           <DialogTitle className="text-cream text-[22px] leading-[29px] font-bold">
             Buscar NFTs

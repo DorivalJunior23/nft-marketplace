@@ -9,6 +9,12 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ?? '/';
 
 let socket: AppSocket | null = null;
 
+declare global {
+  interface Window {
+    __kurioSocket?: AppSocket;
+  }
+}
+
 /**
  * Cliente Socket.IO único da aplicação. Conecta apenas por WebSocket (o MSW não intercepta
  * long-polling) e envia o token da sessão no handshake, para que o servidor filtre eventos
@@ -25,6 +31,8 @@ export function getSocket(): AppSocket {
     reconnectionDelayMax: 4000,
     auth: (cb) => cb({ token: sessionStore.getToken() }),
   });
+  // Exposto para os testes E2E observarem o cliente Socket.IO real (sem efeitos na aplicação).
+  window.__kurioSocket = socket;
   return socket;
 }
 

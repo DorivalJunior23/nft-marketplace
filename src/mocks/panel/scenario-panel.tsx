@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { sessionStore } from '@/features/auth/session-store';
+import { useReturnFocus } from '@/hooks/use-return-focus';
 import { MOCKS_ENABLED } from '@/mocks/enable';
 import type { MockScenario } from '@/mocks/scenarios';
 
@@ -25,6 +26,8 @@ export function ScenarioPanel() {
   const [current, setCurrent] = useState<string>('default');
   const queryClient = useQueryClient();
   const selectId = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const returnFocus = useReturnFocus(buttonRef);
 
   useEffect(() => {
     const api = window.__kurio?.mocks;
@@ -54,6 +57,7 @@ export function ScenarioPanel() {
   return (
     <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen(true)}
         className="border-border-soft bg-surface-dark text-text-accent shadow-float hover:border-primary focus-visible:ring-ring fixed bottom-4 left-4 z-40 flex h-9 items-center gap-2 rounded-full border px-3 text-[12px] font-bold focus-visible:ring-2 focus-visible:outline-none md:bottom-6 md:left-6"
@@ -64,7 +68,10 @@ export function ScenarioPanel() {
         Cenário: {current}
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="border-border bg-surface-card text-cream max-w-[560px] gap-5 p-6">
+        <DialogContent
+          onCloseAutoFocus={returnFocus}
+          className="border-border bg-surface-card text-cream max-w-[560px] gap-5 p-6"
+        >
           <DialogHeader className="gap-2 text-left">
             <DialogTitle className="text-cream text-[20px] leading-6 font-bold">
               Cenários da simulação

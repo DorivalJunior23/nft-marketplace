@@ -88,10 +88,10 @@ export function WalletsPage() {
               action={
                 <div className="flex items-center gap-6">
                   {primary ? (
-                    <label className="text-cream flex cursor-pointer items-center gap-2 text-[14px] leading-4">
+                    <label className="text-cream relative flex cursor-pointer items-center gap-2 text-[14px] leading-4">
                       <input
                         type="checkbox"
-                        className="peer sr-only"
+                        className="peer absolute inset-0 m-0 size-full cursor-pointer appearance-none opacity-0"
                         checked={copyPrimary}
                         onChange={(event) => {
                           setCopyPrimary(event.target.checked);

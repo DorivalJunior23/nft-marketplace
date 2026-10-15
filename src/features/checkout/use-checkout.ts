@@ -248,8 +248,8 @@ export function useCheckout() {
         return;
       }
       if (isApiClientError(error) && error.type === 'quote_outdated') {
+        // Mantém o fingerprint aceito: a nova cotação fica "diferente" até o usuário aceitar de novo.
         setReviewOpen(false);
-        setAcknowledged(null);
         setSubmit({ status: 'error', message: error.message });
         await queryClient.invalidateQueries({ queryKey: ['quote'] });
         return;

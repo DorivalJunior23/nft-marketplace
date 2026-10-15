@@ -1,4 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router';
+import type { RefObject } from 'react';
 
 import { CartIcon, LogoutIcon, SearchIcon, UserIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ interface SiteHeaderProps {
   divider?: boolean;
   cartCount: number;
   onOpenSearch: () => void;
+  searchTriggerRef?: RefObject<HTMLButtonElement | null>;
   onLogout: () => void;
 }
 
@@ -42,6 +44,7 @@ export function SiteHeader({
   divider = false,
   cartCount,
   onOpenSearch,
+  searchTriggerRef,
   onLogout,
 }: SiteHeaderProps) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
@@ -82,6 +85,7 @@ export function SiteHeader({
 
         <div className="flex h-[35px] items-center gap-7">
           <button
+            ref={searchTriggerRef}
             type="button"
             onClick={onOpenSearch}
             className="text-cream hover:text-text-accent focus-visible:ring-ring focus-visible:ring-offset-background flex size-9 items-center justify-center rounded-[6px] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"

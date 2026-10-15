@@ -30,11 +30,15 @@ function useCartPageState() {
   const updateItem = useUpdateCartItem();
   const removeItem = useRemoveCartItem();
   const { notices, dismiss } = useCartNotices(cart.data);
-  const { requireAuth } = useRequireAuth();
+  const { user } = useRequireAuth();
   const navigate = useNavigate();
 
   const blocking = (quote.data?.issues ?? []).some((issue) => issue.type !== 'price_changed');
-  const checkout = () => requireAuth(() => void navigate({ to: '/pagamento' }));
+  // Visitante vai ao login e volta direto ao pagamento, não ao carrinho.
+  const checkout = () =>
+    user
+      ? void navigate({ to: '/pagamento' })
+      : void navigate({ to: '/entrar', search: { redirect: '/pagamento' } });
 
   return { cart, quote, updateItem, removeItem, notices, dismiss, blocking, checkout };
 }

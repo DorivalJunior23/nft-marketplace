@@ -1,3 +1,5 @@
+import type { RefObject } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { NETWORKS, WALLET_TYPES, type Cart, type Quote, type Wallet } from '@/contracts';
+import { useReturnFocus } from '@/hooks/use-return-focus';
 import { formatDiscount, formatEth } from '@/lib/money';
 
 import type { SubmitState } from '../use-checkout';
@@ -22,6 +25,7 @@ interface ReviewDialogProps {
   email: string;
   submit: SubmitState;
   onConfirm: () => void;
+  triggerRef: RefObject<HTMLElement | null>;
 }
 
 /** Revisão antes do envio: itens, valores da cotação revalidada, carteira e rede. */
@@ -35,14 +39,17 @@ export function ReviewDialog({
   email,
   submit,
   onConfirm,
+  triggerRef,
 }: ReviewDialogProps) {
   const busy = submit.status === 'submitting';
+  const returnFocus = useReturnFocus(triggerRef);
   const walletName =
     WALLET_TYPES.find((type) => type.id === wallet?.walletType)?.name ?? wallet?.walletAlias ?? '';
   const networkName = NETWORKS[network as keyof typeof NETWORKS]?.name ?? network;
   return (
     <Dialog open={open} onOpenChange={(next) => (busy ? undefined : onOpenChange(next))}>
       <DialogContent
+        onCloseAutoFocus={returnFocus}
         className="border-border bg-surface-card text-cream max-w-[520px] gap-6 p-8"
         data-testid="review-dialog"
       >

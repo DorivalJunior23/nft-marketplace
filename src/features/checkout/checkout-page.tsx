@@ -1,4 +1,5 @@
 import { Link, useRouter } from '@tanstack/react-router';
+import { useRef } from 'react';
 import { useWatch } from 'react-hook-form';
 
 import { Container } from '@/components/common/container';
@@ -48,10 +49,10 @@ function WalletSwitch({ controller }: { controller: CheckoutController }) {
   if (!secondary || !primary) return null;
   const usingSecondary = selectedWallet?.id === secondary.id;
   return (
-    <label className="text-cream flex cursor-pointer items-center gap-2 text-[15px] leading-5">
+    <label className="text-cream relative flex cursor-pointer items-center gap-2 text-[15px] leading-5">
       <input
         type="checkbox"
-        className="peer sr-only"
+        className="peer absolute inset-0 m-0 size-full cursor-pointer appearance-none opacity-0"
         checked={usingSecondary}
         onChange={(event) => selectWallet(event.target.checked ? secondary : primary)}
       />
@@ -73,9 +74,11 @@ function WalletSwitch({ controller }: { controller: CheckoutController }) {
 function ConfirmButton({
   controller,
   className,
+  buttonRef,
 }: {
   controller: CheckoutController;
   className?: string;
+  buttonRef: React.RefObject<HTMLButtonElement | null>;
 }) {
   const disabled =
     controller.isPreparing ||
@@ -85,6 +88,7 @@ function ConfirmButton({
     !controller.selectedWallet;
   return (
     <Button
+      ref={buttonRef}
       type="submit"
       form="checkout-form"
       className={className}
@@ -113,6 +117,7 @@ function NoWalletNotice() {
 
 function DesktopCheckout({ controller }: { controller: CheckoutController }) {
   const { form, cart, quote, couponCode, selectedWallet, connection } = controller;
+  const payRef = useRef<HTMLButtonElement>(null);
   const walletType = useWatch({ control: form.control, name: 'walletType' });
   const network = useWatch({ control: form.control, name: 'network' });
   const email = useWatch({ control: form.control, name: 'email' });
@@ -180,6 +185,7 @@ function DesktopCheckout({ controller }: { controller: CheckoutController }) {
             />
             <ConfirmButton
               controller={controller}
+              buttonRef={payRef}
               className="h-[45px] w-full rounded-[8px] text-[15px] font-bold"
             />
           </aside>
@@ -195,6 +201,7 @@ function DesktopCheckout({ controller }: { controller: CheckoutController }) {
         email={email}
         submit={controller.submit}
         onConfirm={() => void controller.confirm()}
+        triggerRef={payRef}
       />
     </Container>
   );
@@ -246,6 +253,7 @@ function MobileWalletCard({
 function MobileCheckout({ controller }: { controller: CheckoutController }) {
   const router = useRouter();
   const { form, cart, quote, couponCode, selectedWallet, connection } = controller;
+  const payRef = useRef<HTMLButtonElement>(null);
   const walletType = useWatch({ control: form.control, name: 'walletType' });
   const network = useWatch({ control: form.control, name: 'network' });
   const email = useWatch({ control: form.control, name: 'email' });
@@ -369,6 +377,7 @@ function MobileCheckout({ controller }: { controller: CheckoutController }) {
             </p>
             <ConfirmButton
               controller={controller}
+              buttonRef={payRef}
               className="h-[60px] w-full rounded-full bg-[linear-gradient(90deg,#D28A4C,rgb(210_138_76/0.8))] text-[15px] font-bold"
             />
           </div>
@@ -384,6 +393,7 @@ function MobileCheckout({ controller }: { controller: CheckoutController }) {
         email={email}
         submit={controller.submit}
         onConfirm={() => void controller.confirm()}
+        triggerRef={payRef}
       />
     </div>
   );

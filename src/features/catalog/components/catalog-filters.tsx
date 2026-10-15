@@ -61,12 +61,18 @@ function CheckRow({
   return (
     <label
       className={cn(
-        'hover:text-text-accent has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-surface-card flex h-10 cursor-pointer items-center justify-between text-[15px] leading-10 transition-colors has-[:focus-visible]:rounded-[4px] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2',
+        'hover:text-text-accent has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-surface-card relative flex h-10 cursor-pointer items-center justify-between text-[15px] leading-10 transition-colors has-[:focus-visible]:rounded-[4px] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2',
         checked ? 'text-text-accent' : 'text-text-secondary',
       )}
     >
       <span className="flex items-center gap-2.5">
-        <input type="checkbox" checked={checked} onChange={onChange} className="sr-only" />
+        {/* O input cobre a linha inteira (transparente): acessível, focável e clicável. */}
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={onChange}
+          className="absolute inset-0 m-0 size-full cursor-pointer appearance-none opacity-0"
+        />
         {/* A seleção não depende só da cor: a linha ganha uma marca de check. */}
         <span
           aria-hidden="true"
