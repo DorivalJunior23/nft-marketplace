@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { gotoApp, isMobile, useScenario } from './helpers';
+import { gotoApp, isMobile, applyScenario } from './helpers';
 
 test.describe('Catálogo', () => {
   test('busca, filtros combinados, ordenação e paginação ficam na URL e voltam pelo histórico', async ({
@@ -79,12 +79,12 @@ test.describe('Catálogo', () => {
   });
 
   test('skeletons aparecem em rede lenta e erro permite nova tentativa', async ({ page }) => {
-    await useScenario(page, 'slow');
+    await applyScenario(page, 'slow');
     await page.goto('/mercado');
     await expect(page.getByTestId('nft-card-skeleton').first()).toBeVisible();
     await expect(page.getByTestId('nft-card').first()).toBeVisible({ timeout: 15_000 });
 
-    await useScenario(page, 'server-error');
+    await applyScenario(page, 'server-error');
     await page.goto('/mercado');
     const alert = page
       .getByRole('alert')

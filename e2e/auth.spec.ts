@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { USERS, gotoApp, isMobile, login, mocks, useScenario } from './helpers';
+import { USERS, gotoApp, isMobile, login, mocks, applyScenario } from './helpers';
 
 test.describe('Conta e sessão', () => {
   test('cadastro cria sessão e conflito de e-mail é tratado', async ({ page }) => {
@@ -44,7 +44,7 @@ test.describe('Conta e sessão', () => {
   });
 
   test('sessão expirada leva ao login preservando a rota', async ({ page }) => {
-    await useScenario(page, 'session-expiring');
+    await applyScenario(page, 'session-expiring');
     await login(page, USERS.nova, '/carteiras');
     await expect(page).toHaveURL(/\/carteiras$/);
     await mocks(page).expireSessions();

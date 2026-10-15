@@ -58,8 +58,15 @@ async function main() {
 
   // Usa o Chromium do Playwright (já instalado para os testes) quando não houver Chrome no sistema.
   const chromePath = process.env.CHROME_PATH ?? chromium.executablePath();
-  const chromeVersion = await chromium.launch().then(async (b) => { const v = b.version(); await b.close(); return v; });
-  const chrome = await launch({ chromePath, chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu'] });
+  const chromeVersion = await chromium.launch().then(async (b) => {
+    const v = b.version();
+    await b.close();
+    return v;
+  });
+  const chrome = await launch({
+    chromePath,
+    chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu'],
+  });
   const results = [];
   try {
     for (const page of PAGES) {
@@ -68,7 +75,12 @@ async function main() {
         for (let run = 1; run <= RUNS; run++) {
           const result = await lighthouse(
             `${BASE_URL}${page.path}`,
-            { port: chrome.port, output: ['html', 'json'], logLevel: 'error', onlyCategories: CATEGORIES },
+            {
+              port: chrome.port,
+              output: ['html', 'json'],
+              logLevel: 'error',
+              onlyCategories: CATEGORIES,
+            },
             profile.config,
           );
           const lhr = result.lhr;
@@ -77,15 +89,27 @@ async function main() {
           await writeFile(path.join(REPORTS_DIR, `${name}.json`), result.report[1]);
           const sample = {
             run,
-            scores: Object.fromEntries(CATEGORIES.map((c) => [c, Math.round((lhr.categories[c]?.score ?? 0) * 100)])),
+            scores: Object.fromEntries(
+              CATEGORIES.map((c) => [c, Math.round((lhr.categories[c]?.score ?? 0) * 100)]),
+            ),
             lcp: lhr.audits['largest-contentful-paint']?.numericValue ?? 0,
             cls: lhr.audits['cumulative-layout-shift']?.numericValue ?? 0,
             tbt: lhr.audits['total-blocking-time']?.numericValue ?? 0,
           };
           samples.push(sample);
-          console.log(name, sample.scores, `LCP ${Math.round(sample.lcp)}ms CLS ${sample.cls.toFixed(3)} TBT ${Math.round(sample.tbt)}ms`);
+          console.log(
+            name,
+            sample.scores,
+            `LCP ${Math.round(sample.lcp)}ms CLS ${sample.cls.toFixed(3)} TBT ${Math.round(sample.tbt)}ms`,
+          );
         }
-        results.push({ page, profile, samples, lighthouseVersion: (await import('lighthouse/package.json', { with: { type: 'json' } })).default.version });
+        results.push({
+          page,
+          profile,
+          samples,
+          lighthouseVersion: (await import('lighthouse/package.json', { with: { type: 'json' } }))
+            .default.version,
+        });
       }
     }
   } finally {
@@ -116,20 +140,38 @@ async function main() {
     const med = (key) => median(samples.map((s) => s.scores[key]));
     const row = CATEGORIES.map((c) => {
       const value = med(c);
-      if (value < TARGETS[c]) failures.push(`${page.label} (${profile.id}) · ${c}: ${value} < ${TARGETS[c]}`);
+      if (value < TARGETS[c])
+        failures.push(`${page.label} (${profile.id}) · ${c}: ${value} < ${TARGETS[c]}`);
       return value;
     });
     lines.push(
       `| ${page.label} | ${profile.id} | ${row.join(' | ')} | ${Math.round(median(samples.map((s) => s.lcp)))} | ${median(samples.map((s) => s.cls)).toFixed(3)} | ${Math.round(median(samples.map((s) => s.tbt)))} |`,
     );
   }
-  lines.push('', '## Metas', '', 'Performance ≥ 90 · Accessibility ≥ 95 · Best Practices ≥ 95 · SEO ≥ 90', '');
-  lines.push(failures.length ? `### Abaixo da meta\n\n${failures.map((f) => `- ${f}`).join('\n')}\n` : 'Todas as medianas atingiram as metas.\n');
+  lines.push(
+    '',
+    '## Metas',
+    '',
+    'Performance ≥ 90 · Accessibility ≥ 95 · Best Practices ≥ 95 · SEO ≥ 90',
+    '',
+  );
+  lines.push(
+    failures.length
+      ? `### Abaixo da meta\n\n${failures.map((f) => `- ${f}`).join('\n')}\n`
+      : 'Todas as medianas atingiram as metas.\n',
+  );
   lines.push('## Medições individuais', '');
   for (const { page, profile, samples } of results) {
-    lines.push(`### ${page.label} · ${profile.id}`, '', '| Medição | Perf | A11y | BP | SEO | LCP (ms) | CLS | TBT (ms) | Relatório |', '| --- | --- | --- | --- | --- | --- | --- | --- | --- |');
+    lines.push(
+      `### ${page.label} · ${profile.id}`,
+      '',
+      '| Medição | Perf | A11y | BP | SEO | LCP (ms) | CLS | TBT (ms) | Relatório |',
+      '| --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    );
     for (const s of samples) {
-      lines.push(`| ${s.run} | ${s.scores.performance} | ${s.scores.accessibility} | ${s.scores['best-practices']} | ${s.scores.seo} | ${Math.round(s.lcp)} | ${s.cls.toFixed(3)} | ${Math.round(s.tbt)} | [html](reports/${page.id}-${profile.id}-${s.run}.html) · [json](reports/${page.id}-${profile.id}-${s.run}.json) |`);
+      lines.push(
+        `| ${s.run} | ${s.scores.performance} | ${s.scores.accessibility} | ${s.scores['best-practices']} | ${s.scores.seo} | ${Math.round(s.lcp)} | ${s.cls.toFixed(3)} | ${Math.round(s.tbt)} | [html](reports/${page.id}-${profile.id}-${s.run}.html) · [json](reports/${page.id}-${profile.id}-${s.run}.json) |`,
+      );
     }
     lines.push('');
   }

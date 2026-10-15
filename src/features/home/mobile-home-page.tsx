@@ -111,12 +111,15 @@ export function MobileHomePage({ search, route = '/' }: MobileHomePageProps) {
       <section
         aria-labelledby="catalogo-mobile"
         aria-busy={list.isFetching || undefined}
-        className={cn('pt-2', list.isFetching && !list.isPending && 'opacity-70')}
+        className={cn(
+          'pt-2',
+          list.isFetching && !list.isPending && !list.isPlaceholderData && 'opacity-70',
+        )}
       >
         <h2 id="catalogo-mobile" className="sr-only">
           Catálogo de NFTs
         </h2>
-        {list.isPending ? (
+        {list.isPending || (list.isPlaceholderData && list.isFetching) ? (
           <ul className="grid grid-cols-2 gap-x-4 gap-y-6" aria-label="Carregando catálogo">
             {SKELETONS.map((key, index) => (
               <li key={key} className={cn(index % 2 === 1 && 'mt-8')}>

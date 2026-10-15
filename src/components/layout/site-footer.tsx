@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useId, useState, type FormEvent } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import {
   FacebookIcon,

@@ -32,20 +32,20 @@ A aplicação roda a partir de um checkout limpo, sem serviços privados nem bac
 
 ## Variáveis de ambiente
 
-| Variável | Padrão | Uso |
-| --- | --- | --- |
+| Variável            | Padrão | Uso                                                                                                                                             |
+| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `VITE_ENABLE_MOCKS` | `true` | Ativa a camada MSW (REST + Socket.IO). `.env.development` e `.env.production` já vêm com `true`, então o build de demonstração mantém os mocks. |
-| `VITE_API_URL` | `/api` | Base das chamadas REST do Axios. |
-| `VITE_SOCKET_URL` | `/` | Origem do Socket.IO (path fixo `/socket.io/`). |
+| `VITE_API_URL`      | `/api` | Base das chamadas REST do Axios.                                                                                                                |
+| `VITE_SOCKET_URL`   | `/`    | Origem do Socket.IO (path fixo `/socket.io/`).                                                                                                  |
 
 Copie `.env.example` para `.env` para sobrescrever localmente. Nenhum segredo é necessário.
 
 ## Credenciais fictícias
 
-| Usuário | E-mail | Senha | Observações |
-| --- | --- | --- | --- |
+| Usuário   | E-mail                | Senha        | Observações                                                                                           |
+| --------- | --------------------- | ------------ | ----------------------------------------------------------------------------------------------------- |
 | Nova Sato | `nova.sato@kurio.app` | `Kurio@2026` | Já tem carteira principal (MetaMask, Ethereum) e secundária (WalletConnect, Polygon) e dois favoritos |
-| Caio Lima | `caio.lima@kurio.app` | `Kurio@2026` | Sem carteiras cadastradas: útil para exercitar o cadastro de carteira e o bloqueio do pagamento |
+| Caio Lima | `caio.lima@kurio.app` | `Kurio@2026` | Sem carteiras cadastradas: útil para exercitar o cadastro de carteira e o bloqueio do pagamento       |
 
 Senhas são guardadas como hash SHA-256 com salt no banco simulado (localStorage), nunca em claro. Novas contas podem ser criadas em **Criar conta**.
 
@@ -55,21 +55,21 @@ Cupons: `KURIO10` (10%), `GENESIS` (0.05 ETH fixo), `EXPIRADO` (expirado). Qualq
 
 Os mocks respondem conforme um cenário determinístico. Selecione pela URL (`?mock=<id>`), pelo painel flutuante **Cenário** no canto inferior esquerdo, ou por `window.__kurio.mocks.scenario.set('<id>')` no console. O cenário fica salvo no `localStorage` até ser trocado.
 
-| Id | Efeito |
-| --- | --- |
-| `default` | Sucesso em tudo, latência de 150 a 450 ms, pedido confirmado após 2,5 s |
-| `empty` | Catálogo vazio |
-| `slow` | Latência de 2,5 a 4 s (skeletons) |
-| `jitter` | Latência de 100 ms a 2,5 s, respostas fora de ordem |
-| `offline` | Todas as requisições falham como erro de rede |
-| `server-error` | Catálogo e detalhe respondem 503 (falha transitória, com nova tentativa) |
-| `session-expiring` | Sessões duram 20 s; depois a API responde 401 e o app leva ao login preservando a rota |
-| `favorites-fail` | Mutations de favoritos respondem 503 (rollback otimista) |
-| `wallet-rejected` | Conexão da carteira recusada no pagamento |
-| `price-change` | Após a primeira cotação do checkout, o preço do primeiro item sobe via `nft.updated` |
-| `sold-out` | Após a primeira cotação do checkout, a edição do primeiro item esgota via `nft.updated` |
-| `order-timeout` | A primeira criação de pedido nunca responde; "Tentar novamente" recupera o mesmo pedido pela chave de idempotência |
-| `payment-declined` | O pedido é recusado pela rede |
+| Id                 | Efeito                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `default`          | Sucesso em tudo, latência de 150 a 450 ms, pedido confirmado após 2,5 s                                            |
+| `empty`            | Catálogo vazio                                                                                                     |
+| `slow`             | Latência de 2,5 a 4 s (skeletons)                                                                                  |
+| `jitter`           | Latência de 100 ms a 2,5 s, respostas fora de ordem                                                                |
+| `offline`          | Todas as requisições falham como erro de rede                                                                      |
+| `server-error`     | Catálogo e detalhe respondem 503 (falha transitória, com nova tentativa)                                           |
+| `session-expiring` | Sessões duram 20 s; depois a API responde 401 e o app leva ao login preservando a rota                             |
+| `favorites-fail`   | Mutations de favoritos respondem 503 (rollback otimista)                                                           |
+| `wallet-rejected`  | Conexão da carteira recusada no pagamento                                                                          |
+| `price-change`     | Após a primeira cotação do checkout, o preço do primeiro item sobe via `nft.updated`                               |
+| `sold-out`         | Após a primeira cotação do checkout, a edição do primeiro item esgota via `nft.updated`                            |
+| `order-timeout`    | A primeira criação de pedido nunca responde; "Tentar novamente" recupera o mesmo pedido pela chave de idempotência |
+| `payment-declined` | O pedido é recusado pela rede                                                                                      |
 
 Conflito de cadastro e validação de formulário, cupom inválido ou expirado e disponibilidade insuficiente são regras naturais da simulação e valem em todos os cenários.
 
@@ -82,12 +82,12 @@ Painel **Cenário → Resetar dados**, ou `await window.__kurio.mocks.reset()` n
 No console (ou pelo painel):
 
 ```js
-window.__kurio.mocks.nft.increasePrice('emerald-ape-0042', 1.1);        // dispara nft.updated com preço maior
+window.__kurio.mocks.nft.increasePrice('emerald-ape-0042', 1.1); // dispara nft.updated com preço maior
 window.__kurio.mocks.nft.setAvailability('emerald-ape-0042', '1-50', 0); // esgota a edição 1/50
-window.__kurio.mocks.nft.republish('emerald-ape-0042');                  // reenvia o evento (duplicata)
-window.__kurio.mocks.orders.republish('<orderId>', { stale: true });     // evento antigo de pedido
-window.__kurio.mocks.socket.dropConnections();                           // derruba o socket (reconexão)
-window.__kurio.mocks.session.expireAll();                                // expira todas as sessões
+window.__kurio.mocks.nft.republish('emerald-ape-0042'); // reenvia o evento (duplicata)
+window.__kurio.mocks.orders.republish('<orderId>', { stale: true }); // evento antigo de pedido
+window.__kurio.mocks.socket.dropConnections(); // derruba o socket (reconexão)
+window.__kurio.mocks.session.expireAll(); // expira todas as sessões
 ```
 
 Os eventos chegam ao app pelo `socket.io-client` real, interceptado pelo MSW.
@@ -101,20 +101,20 @@ Fluxos de falha passo a passo:
 
 ## Scripts
 
-| Comando | O que faz |
-| --- | --- |
-| `npm run dev` | Desenvolvimento com mocks em `http://localhost:5173` |
-| `npm run build` | Build otimizado em `dist/` (mocks ativos, pronto para a Vercel) |
-| `npm run preview` | Serve o build em `http://localhost:4173` |
-| `npm run typecheck` | `tsc` em modo strict |
-| `npm run lint` | ESLint (TypeScript, React Hooks, jsx-a11y) |
-| `npm run format` / `format:check` | Prettier |
-| `npm test` | Playwright: todos os fluxos em Chromium desktop (1440) e mobile (390), com regressão visual |
-| `npm run test:update` | Atualiza as baselines visuais em `e2e/__screenshots__` |
-| `npm run test:report` | Abre o relatório HTML da última execução (traces das falhas incluídos) |
-| `npm run lighthouse` | Auditoria Lighthouse (3 medições × 2 páginas × 2 perfis) com relatórios em `lighthouse/reports` e resumo em `lighthouse/RESULTS.md` |
-| `npm run images` | Regenera as artes otimizadas (WebP/AVIF) a partir dos originais do Figma |
-| `npm run icons` | Sincroniza os ícones SVG exportados do Figma |
+| Comando                           | O que faz                                                                                                                           |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                     | Desenvolvimento com mocks em `http://localhost:5173`                                                                                |
+| `npm run build`                   | Build otimizado em `dist/` (mocks ativos, pronto para a Vercel)                                                                     |
+| `npm run preview`                 | Serve o build em `http://localhost:4173`                                                                                            |
+| `npm run typecheck`               | `tsc` em modo strict                                                                                                                |
+| `npm run lint`                    | ESLint (TypeScript, React Hooks, jsx-a11y)                                                                                          |
+| `npm run format` / `format:check` | Prettier                                                                                                                            |
+| `npm test`                        | Playwright: todos os fluxos em Chromium desktop (1440) e mobile (390), com regressão visual                                         |
+| `npm run test:update`             | Atualiza as baselines visuais em `e2e/__screenshots__`                                                                              |
+| `npm run test:report`             | Abre o relatório HTML da última execução (traces das falhas incluídos)                                                              |
+| `npm run lighthouse`              | Auditoria Lighthouse (3 medições × 2 páginas × 2 perfis) com relatórios em `lighthouse/reports` e resumo em `lighthouse/RESULTS.md` |
+| `npm run images`                  | Regenera as artes otimizadas (WebP/AVIF) a partir dos originais do Figma                                                            |
+| `npm run icons`                   | Sincroniza os ícones SVG exportados do Figma                                                                                        |
 
 Os testes sobem o build e o preview sozinhos. Para rodar um projeto: `npx playwright test --project=chromium-mobile`.
 

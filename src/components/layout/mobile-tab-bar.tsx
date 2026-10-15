@@ -1,5 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import { HeartOutlineIcon, HomeIcon, ShopIcon, UserIcon } from '@/components/icons';
 import { useCartCount } from '@/features/cart/queries';

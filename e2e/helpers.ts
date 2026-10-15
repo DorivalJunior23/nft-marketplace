@@ -16,7 +16,7 @@ export const USERS = {
 } as const;
 
 /** Define o cenário dos mocks antes de qualquer script da página rodar. */
-export async function useScenario(page: Page, scenario: string): Promise<void> {
+export async function applyScenario(page: Page, scenario: string): Promise<void> {
   await page.addInitScript((id) => {
     window.localStorage.setItem('kurio.mock.scenario', id);
   }, scenario);

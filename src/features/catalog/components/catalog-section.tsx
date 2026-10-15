@@ -30,8 +30,9 @@ export function CatalogSection({ search, route, showFeatured = false }: CatalogS
   const { setFilters, setPage } = useCatalogSearch(search, route);
   const navigate = useNavigate();
 
-  const isInitialLoading = list.isPending;
-  const isRefreshing = list.isFetching && !list.isPending;
+  // Nova consulta (filtros/página) mostra skeleton; só o refetch da mesma consulta fica em segundo plano.
+  const isInitialLoading = list.isPending || (list.isPlaceholderData && list.isFetching);
+  const isRefreshing = list.isFetching && !isInitialLoading;
 
   return (
     <section id="mercado" aria-labelledby="catalogo-titulo" className="flex scroll-mt-6 gap-12">

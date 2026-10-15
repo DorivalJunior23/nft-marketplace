@@ -85,7 +85,7 @@ export function useCheckout() {
   const quote = useQuote(ownerId, cart.data, couponCode, 'checkout');
 
   const draft = useMemo(() => checkoutDraft.read(), []);
-  const [walletId, setWalletId] = useState<string | null>(draft?.walletId ?? null);
+  const [chosenWalletId, setWalletId] = useState<string | null>(draft?.walletId ?? null);
   const [connection, setConnection] = useState<ConnectionState>({ status: 'idle' });
   const [reviewOpen, setReviewOpen] = useState(false);
   const [submit, setSubmit] = useState<SubmitState>({ status: 'idle' });
@@ -101,14 +101,15 @@ export function useCheckout() {
 
   const primary = wallets.data?.find((wallet) => wallet.kind === 'primary') ?? null;
   const secondary = wallets.data?.find((wallet) => wallet.kind === 'secondary') ?? null;
+  // Sem escolha explícita, a carteira principal é a selecionada (derivado, sem estado extra).
+  const walletId = chosenWalletId ?? primary?.id ?? null;
   const selectedWallet = wallets.data?.find((wallet) => wallet.id === walletId) ?? primary;
 
-  // Pré-preenche uma única vez com perfil + carteira principal (ou o rascunho salvo).
+  // Pré-preenche o formulário uma única vez com perfil + carteira selecionada (ou o rascunho salvo).
   useEffect(() => {
     if (prefilled.current || !profile.data || !wallets.data) return;
     prefilled.current = true;
     const wallet = wallets.data.find((item) => item.id === walletId) ?? primary;
-    if (!walletId && wallet) setWalletId(wallet.id);
     form.reset(valuesFrom(profile.data, wallet, draft?.values ?? {}));
   }, [profile.data, wallets.data, walletId, primary, form, draft]);
 

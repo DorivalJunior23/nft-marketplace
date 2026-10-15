@@ -148,7 +148,15 @@ export function getFeatured(): FeaturedResponse {
   const hero = nfts.find((nft) => nft.id === 'emerald-ape-0042') ?? nfts[0];
   const featured = nfts.find((nft) => nft.id === 'sage-nomad-0009') ?? nfts[1] ?? nfts[0];
   if (!hero || !featured) throw notFound('Catálogo vazio.');
-  return { hero: toSummary(hero), featured: toSummary(featured) };
+  const slideIds = ['emerald-ape-0042', 'neon-vessel-0552', 'golden-beat-0207'];
+  const slides = slideIds
+    .map((id) => nfts.find((nft) => nft.id === id))
+    .filter((nft): nft is Nft => Boolean(nft));
+  return {
+    hero: toSummary(hero),
+    featured: toSummary(featured),
+    slides: slides.length ? slides.map(toSummary) : [toSummary(hero)],
+  };
 }
 
 export function relatedNfts(nft: Nft, limit = 5): NftSummary[] {

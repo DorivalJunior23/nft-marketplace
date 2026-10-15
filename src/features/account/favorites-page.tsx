@@ -67,7 +67,7 @@ export function FavoritesPage() {
                 <button
                   type="button"
                   onClick={() => toggle.mutate({ nftId: id, next: false })}
-                  className="text-text-accent focus-visible:ring-ring self-start text-[13px] leading-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
+                  className="text-text-accent focus-visible:ring-ring hover:bg-primary/15 hover:text-coral self-start rounded-[4px] px-1 text-[13px] leading-4 transition-colors hover:underline focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Remover da lista
                 </button>

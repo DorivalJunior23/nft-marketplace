@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import { PasswordField, TextField, type FieldVariant } from '@/components/forms/field';
 import { FacebookIcon } from '@/components/icons';

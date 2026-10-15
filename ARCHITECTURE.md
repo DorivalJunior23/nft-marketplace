@@ -30,16 +30,16 @@ src/routes      rotas por arquivo; rotas privadas usam beforeLoad com requireSes
 
 Base `/api`. Erros têm corpo único `{ type, message, details? }` com `details` por campo quando for validação. Tipos de erro: `validation_error` (422), `unauthorized` (401), `forbidden` (403), `not_found` (404), `conflict` (409), `availability_conflict` (409), `quote_outdated` (409), `idempotency_conflict` (409), `wallet_rejected` (409), `transient_error` (503). O cliente ainda normaliza `network_error` e `timeout`.
 
-| Recurso | Operações |
-| --- | --- |
-| Sessão e conta | `POST /auth/register`, `POST /auth/login` (aceita `guestCartId` para mesclar o carrinho), `GET /auth/session`, `POST /auth/logout`, `GET /me` |
-| NFTs | `GET /nfts?q&collection&network&priceMin&priceMax&sort&tab&page` (itens, paginação e facetas), `GET /nfts/featured`, `GET /nfts/:id`, `GET /nfts/:id/related` |
-| Favoritos | `GET /favorites`, `PUT /favorites/:nftId`, `DELETE /favorites/:nftId` |
-| Carrinho | `GET /cart`, `POST /cart/items`, `PATCH /cart/items/:lineId`, `DELETE /cart/items/:lineId` (visitante identificado por `X-Guest-Cart`; usuário por `Authorization: Bearer`) |
-| Cotação | `POST /quote?context=cart\|checkout` → itens com preço corrente, subtotal, desconto, taxa de rede, total, estado do cupom (`applied`, `invalid`, `expired`), `issues` (`price_changed`, `sold_out`, `insufficient_availability`, `edition_unavailable`) e `fingerprint` |
-| Pedidos | `POST /orders` com header `Idempotency-Key`, `GET /orders`, `GET /orders/:id` |
-| Perfil | `GET /profile`, `PATCH /profile`, `PUT /profile/avatar` (data URL), `DELETE /profile/avatar`, `POST /profile/password` |
-| Carteiras | `GET /wallets`, `POST /wallets`, `PUT /wallets/:id`, `POST /wallets/:id/connect`, `POST /wallets/:id/disconnect` |
+| Recurso        | Operações                                                                                                                                                                                                                                                               |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sessão e conta | `POST /auth/register`, `POST /auth/login` (aceita `guestCartId` para mesclar o carrinho), `GET /auth/session`, `POST /auth/logout`, `GET /me`                                                                                                                           |
+| NFTs           | `GET /nfts?q&collection&network&priceMin&priceMax&sort&tab&page` (itens, paginação e facetas), `GET /nfts/featured`, `GET /nfts/:id`, `GET /nfts/:id/related`                                                                                                           |
+| Favoritos      | `GET /favorites`, `PUT /favorites/:nftId`, `DELETE /favorites/:nftId`                                                                                                                                                                                                   |
+| Carrinho       | `GET /cart`, `POST /cart/items`, `PATCH /cart/items/:lineId`, `DELETE /cart/items/:lineId` (visitante identificado por `X-Guest-Cart`; usuário por `Authorization: Bearer`)                                                                                             |
+| Cotação        | `POST /quote?context=cart\|checkout` → itens com preço corrente, subtotal, desconto, taxa de rede, total, estado do cupom (`applied`, `invalid`, `expired`), `issues` (`price_changed`, `sold_out`, `insufficient_availability`, `edition_unavailable`) e `fingerprint` |
+| Pedidos        | `POST /orders` com header `Idempotency-Key`, `GET /orders`, `GET /orders/:id`                                                                                                                                                                                           |
+| Perfil         | `GET /profile`, `PATCH /profile`, `PUT /profile/avatar` (data URL), `DELETE /profile/avatar`, `POST /profile/password`                                                                                                                                                  |
+| Carteiras      | `GET /wallets`, `POST /wallets`, `PUT /wallets/:id`, `POST /wallets/:id/connect`, `POST /wallets/:id/disconnect`                                                                                                                                                        |
 
 ### Idempotência dos pedidos
 
@@ -94,7 +94,8 @@ Transporte: `socket.io-client` com `transports: ['websocket']`, path `/socket.io
 - `staleTime` padrão 30 s; cotação sempre `staleTime: 0` com chave que inclui itens, versões dos NFTs, cupom e contexto; detalhe 60 s; relacionados e destaque 5 min.
 - Retry só para falhas transitórias (rede, timeout, 5xx), no máximo 2 tentativas com backoff; 4xx não repete. Mutations não repetem (a idempotência cobre o reenvio manual do pedido).
 - `refetchOnReconnect` ligado e `refetchOnWindowFocus` desligado (eventos cobrem a atualização em segundo plano). Listagens usam `placeholderData: keepPreviousData` para manter a página anterior visível com estado de atualização, e `signal` cancela requisições obsoletas ao mudar parâmetros.
-- Invalidação: mutations de carrinho, favoritos, perfil e carteiras invalidam seus recursos; eventos atualizam o cache diretamente e invalidam cotações/pedidos; logout limpa tudo.
+- Invalidação: mutations de carrinho, favoritos, perfil e carteiras invalidam seus recursos; eventos atualizam o cache diretamente e invalidam cotações/pedidos; logout limpa tudo; trocar de cenário no painel refaz todas as consultas (inclusive as que falharam).
+- Carregamento: uma consulta nova (busca, filtros, página) mostra skeleton; só o refetch da mesma consulta fica em segundo plano com o conteúdo esmaecido. Retries ficam pausados enquanto a aba não está visível (comportamento padrão do TanStack Query) e retomam ao voltar.
 - Atualização otimista com rollback: favoritos (cenário `favorites-fail` demonstra o rollback), quantidade e remoção no carrinho.
 
 ## Mocks
@@ -109,7 +110,9 @@ Transporte: `socket.io-client` com `transports: ['websocket']`, path `/socket.io
 - Diálogos e drawers (Radix) prendem o foco, fecham com Escape e devolvem o foco ao gatilho (hook `useReturnFocus` para gatilhos fora do Radix).
 - Formulários com `label`, `aria-required`, `aria-invalid` e `aria-describedby` apontando para a mensagem de erro (`role="alert"`); erros da API caem nos campos correspondentes.
 - Estados não dependem só de cor: filtros selecionados ganham marca de check, status de pedido tem ponto + texto, avisos têm ícone.
-- `aria-live` para contadores, cotação, conexão da carteira, pedido e eventos em tempo real; `prefers-reduced-motion` desliga shimmer e transições.
+- `aria-live` para contadores, cotação, conexão da carteira, pedido e eventos em tempo real; `prefers-reduced-motion` desliga shimmer, transições e o avanço automático do carrossel.
+- Toasts usam a própria mensagem como id: repetir uma ação substitui o aviso em vez de empilhar, com no máximo três visíveis.
+- O anel de foco global vale para links e botões; campos de formulário sinalizam foco pela borda laranja, evitando contorno duplo.
 - Imagens de arte decorativas têm `alt=""` quando o texto ao lado já descreve o item; a arte principal do detalhe tem alternativa textual.
 
 ## Decisões de UX e desvios do Figma
@@ -122,7 +125,7 @@ Transporte: `socket.io-client` com `transports: ['websocket']`, path `/socket.io
 - **Descrição do NFT**: no frame os rótulos "Contrato" e "Direitos autorais" aparecem trocados com seus textos; a implementação pareia cada rótulo ao texto correto.
 - **Estados não desenhados** (pendente, recusado, vazio, erro, 404, skeletons) seguem os mesmos tokens, tipografia e composição.
 - **Links fora do escopo** (editorial, suporte, redes sociais, newsletter, criação de NFT, social login, recuperação de senha) levam a páginas "em breve" ou mostram aviso; nunca aparentam sucesso.
-- **Animações**: o arquivo não tem fluxos de protótipo; não há transições a reproduzir. Hover e foco são discretos e respeitam movimento reduzido.
+- **Animações**: o arquivo não tem fluxos de protótipo. O herói da Início virou um carrossel com os três NFTs indicados pelos três pontos do Figma: crossfade a cada 5 s, pausa em hover e foco, indicadores navegáveis por teclado e sem avanço automático com `prefers-reduced-motion`. Hover e foco são discretos.
 
 ## Assets
 

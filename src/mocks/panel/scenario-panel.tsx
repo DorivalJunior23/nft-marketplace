@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useId, useRef, useState } from 'react';
-import { toast } from 'sonner';
+import { useId, useRef, useState } from 'react';
+import { toast } from '@/lib/toast';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,19 +22,15 @@ import type { MockScenario } from '@/mocks/scenarios';
  */
 export function ScenarioPanel() {
   const [open, setOpen] = useState(false);
-  const [scenarios, setScenarios] = useState<readonly MockScenario[]>([]);
-  const [current, setCurrent] = useState<string>('default');
+  // A lista é estática e o cenário inicial já foi resolvido quando os mocks subiram.
+  const scenarios: readonly MockScenario[] = window.__kurio?.mocks.scenario.list() ?? [];
+  const [current, setCurrent] = useState<string>(
+    () => window.__kurio?.mocks.scenario.get().id ?? 'default',
+  );
   const queryClient = useQueryClient();
   const selectId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const returnFocus = useReturnFocus(buttonRef);
-
-  useEffect(() => {
-    const api = window.__kurio?.mocks;
-    if (!api) return;
-    setScenarios(api.scenario.list());
-    setCurrent(api.scenario.get().id);
-  }, [open]);
 
   if (!MOCKS_ENABLED) return null;
   const api = window.__kurio?.mocks;
@@ -43,6 +39,8 @@ export function ScenarioPanel() {
     if (!api) return;
     api.scenario.set(id);
     setCurrent(id);
+    // Consultas que falharam no cenário anterior (ex.: offline) voltam a carregar.
+    void queryClient.resetQueries();
     toast.info(`Cenário "${api.scenario.get().label}" ativado.`);
   };
 

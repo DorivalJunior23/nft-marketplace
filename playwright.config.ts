@@ -24,6 +24,8 @@ export default defineConfig({
     video: 'off',
     locale: 'pt-BR',
     timezoneId: 'America/Sao_Paulo',
+    // Sem avanço automático do carrossel: baselines estáveis e caminho de movimento reduzido exercitado.
+    reducedMotion: 'reduce',
   },
   projects: [
     {

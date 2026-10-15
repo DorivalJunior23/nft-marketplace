@@ -116,10 +116,16 @@ export function SiteHeader({
               <DropdownMenuTrigger asChild>
                 <Button
                   size="compact"
-                  className="max-w-[160px]"
+                  className="max-w-[200px] gap-2 pr-3 pl-1.5"
                   aria-label={`Conta de ${user.displayName}`}
                 >
-                  <UserIcon className="size-5" />
+                  {user.avatarUrl ? (
+                    <img src={user.avatarUrl} alt="" className="size-6 rounded-full object-cover" />
+                  ) : (
+                    <span className="bg-ink/15 flex size-6 items-center justify-center rounded-full">
+                      <UserIcon className="size-4" />
+                    </span>
+                  )}
                   <span className="truncate">{user.displayName.split(' ')[0]}</span>
                 </Button>
               </DropdownMenuTrigger>

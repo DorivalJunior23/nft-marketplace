@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-import { USERS, addToCartViaApi, gotoApp, isMobile, login, mocks, useScenario } from './helpers';
+import { USERS, addToCartViaApi, gotoApp, isMobile, login, mocks, applyScenario } from './helpers';
 
 async function startCheckout(page: Parameters<typeof login>[0], scenario = 'default') {
-  if (scenario !== 'default') await useScenario(page, scenario);
+  if (scenario !== 'default') await applyScenario(page, scenario);
   await login(page, USERS.nova, '/');
   await addToCartViaApi(page, 'emerald-ape-0042', '1-50', 2);
   await gotoApp(page, '/pagamento');

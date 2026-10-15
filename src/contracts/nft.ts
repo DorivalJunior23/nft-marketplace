@@ -114,4 +114,6 @@ export interface NftListResponse extends Paginated<NftSummary> {
 export interface FeaturedResponse {
   hero: NftSummary;
   featured: NftSummary;
+  /** NFTs do carrossel do herói (o primeiro é `hero`). */
+  slides: NftSummary[];
 }

@@ -66,7 +66,7 @@ export function AppShell({ children }: AppShellProps) {
       <SessionSync />
       <ScenarioPanel />
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} triggerRef={searchTriggerRef} />
-      <Toaster position={isDesktop ? 'bottom-right' : 'top-center'} closeButton />
+      <Toaster position={isDesktop ? 'bottom-right' : 'top-center'} closeButton visibleToasts={3} />
     </div>
   );
 }

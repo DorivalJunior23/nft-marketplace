@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import type { Nft, NftEdition } from '@/contracts';
 import { useAddToCart } from '@/features/cart/mutations';
