@@ -13,8 +13,7 @@ export interface QuoteRequest {
   network?: NetworkId;
 }
 
-export type QuoteIssueType =
-  'price_changed' | 'sold_out' | 'insufficient_availability' | 'edition_unavailable';
+export type QuoteIssueType = 'sold_out' | 'insufficient_availability' | 'edition_unavailable';
 
 export interface QuoteIssue {
   nftId: string;

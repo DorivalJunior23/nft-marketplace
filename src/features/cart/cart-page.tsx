@@ -33,7 +33,7 @@ function useCartPageState() {
   const { user } = useRequireAuth();
   const navigate = useNavigate();
 
-  const blocking = (quote.data?.issues ?? []).some((issue) => issue.type !== 'price_changed');
+  const blocking = (quote.data?.issues ?? []).length > 0;
   // Visitante vai ao login e volta direto ao pagamento, não ao carrinho.
   const checkout = () =>
     user

@@ -9,14 +9,7 @@ export function requireSession({ location }: { location: { href: string } }): vo
   }
 }
 
-export const PRIVATE_PREFIXES = [
-  '/perfil',
-  '/carteiras',
-  '/pedidos',
-  '/favoritos',
-  '/pagamento',
-  '/confirmacao',
-];
+export const PRIVATE_PREFIXES = ['/perfil', '/carteiras', '/pedidos', '/favoritos', '/pagamento'];
 
 export function isPrivatePath(pathname: string): boolean {
   return PRIVATE_PREFIXES.some((prefix) => pathname.startsWith(prefix));

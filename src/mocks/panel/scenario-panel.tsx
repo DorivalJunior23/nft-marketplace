@@ -58,12 +58,12 @@ export function ScenarioPanel() {
         ref={buttonRef}
         type="button"
         onClick={() => setOpen(true)}
-        className="border-border-soft bg-surface-dark text-text-accent shadow-float hover:border-primary focus-visible:ring-ring fixed right-4 bottom-[176px] z-40 flex h-9 items-center gap-2 rounded-full border px-3 text-[12px] font-bold focus-visible:ring-2 focus-visible:outline-none md:right-auto md:bottom-6 md:left-6"
-        aria-label="Abrir painel de cenários da simulação"
+        className="border-border-soft bg-surface-dark text-text-accent shadow-float hover:border-primary focus-visible:ring-ring fixed top-[45%] right-0 z-40 flex h-11 w-6 items-center justify-center rounded-l-full border border-r-0 text-[12px] font-bold focus-visible:ring-2 focus-visible:outline-none md:top-auto md:right-auto md:bottom-6 md:left-6 md:h-9 md:w-auto md:gap-2 md:rounded-full md:border-r md:px-3"
+        aria-label={`Abrir painel de cenários da simulação (cenário atual: ${current})`}
         data-testid="scenario-panel-button"
       >
         <span aria-hidden="true" className="bg-primary size-2 rounded-full" />
-        Cenário: {current}
+        <span className="hidden md:inline">Cenário: {current}</span>
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent

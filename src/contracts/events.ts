@@ -41,6 +41,5 @@ export interface ServerToClientEvents {
   'order.updated': (event: OrderUpdatedEvent) => void;
 }
 
-export interface ClientToServerEvents {
-  'orders.subscribe': (orderId: string) => void;
-}
+/** O cliente não emite eventos: a assinatura é implícita pelo token do handshake. */
+export type ClientToServerEvents = Record<never, never>;

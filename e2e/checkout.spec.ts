@@ -99,7 +99,23 @@ test.describe('Compra', () => {
     expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(1);
     await dialog.getByRole('button', { name: 'Tentar novamente' }).click();
     await expect(page).toHaveURL(/\/pedidos\/ord_/);
-    await expect(page.getByTestId('order-status')).toHaveText('Confirmado', { timeout: 15_000 });
+    await expect(page.getByTestId('order-status')).toHaveText('Pendente');
+    await expect(page.getByTestId('order-status')).toHaveText('Confirmado', { timeout: 20_000 });
+    expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(1);
+  });
+
+  test('evento de confirmação recupera o pedido sem clique após o timeout', async ({ page }) => {
+    test.setTimeout(90_000);
+    await startCheckout(page, 'order-timeout');
+    await page.getByTestId('pay-button').click();
+    await page.getByTestId('confirm-order-button').click();
+    const dialog = page.getByTestId('review-dialog');
+    await expect(dialog.getByRole('alert')).toContainText('demorou mais que o esperado', {
+      timeout: 20_000,
+    });
+    // Sem clicar em nada: o order.updated da confirmação reenvia com a mesma chave e navega.
+    await expect(page).toHaveURL(/\/pedidos\/ord_/, { timeout: 20_000 });
+    await expect(page.getByTestId('order-status')).toHaveText('Confirmado');
     expect(await mocks(page).ordersOf(USERS.nova.id)).toHaveLength(1);
   });
 

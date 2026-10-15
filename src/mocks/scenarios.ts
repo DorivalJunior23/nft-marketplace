@@ -117,8 +117,9 @@ export const SCENARIOS: readonly MockScenario[] = [
     id: 'order-timeout',
     label: 'Timeout ao criar pedido',
     description:
-      'A primeira criação de pedido nunca responde; a repetição com a mesma chave recupera o pedido.',
+      'A primeira criação de pedido nunca responde e a rede demora 12 s para confirmar; "Tentar novamente" ou o próprio evento de confirmação recuperam o pedido pela mesma chave.',
     orderCreate: 'timeout-once',
+    orderSettlementMs: 12_000,
   },
   {
     ...base,

@@ -55,21 +55,21 @@ Cupons: `KURIO10` (10%), `GENESIS` (0.05 ETH fixo), `EXPIRADO` (expirado). Qualq
 
 Os mocks respondem conforme um cenário determinístico. Selecione pela URL (`?mock=<id>`), pelo painel flutuante **Cenário** no canto inferior esquerdo, ou por `window.__kurio.mocks.scenario.set('<id>')` no console. O cenário fica salvo no `localStorage` até ser trocado.
 
-| Id                 | Efeito                                                                                                             |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `default`          | Sucesso em tudo, latência de 150 a 450 ms, pedido confirmado após 2,5 s                                            |
-| `empty`            | Catálogo vazio                                                                                                     |
-| `slow`             | Latência de 2,5 a 4 s (skeletons)                                                                                  |
-| `jitter`           | Latência de 100 ms a 2,5 s, respostas fora de ordem                                                                |
-| `offline`          | Todas as requisições falham como erro de rede                                                                      |
-| `server-error`     | Catálogo e detalhe respondem 503 (falha transitória, com nova tentativa)                                           |
-| `session-expiring` | Sessões duram 20 s; depois a API responde 401 e o app leva ao login preservando a rota                             |
-| `favorites-fail`   | Mutations de favoritos respondem 503 (rollback otimista)                                                           |
-| `wallet-rejected`  | Conexão da carteira recusada no pagamento                                                                          |
-| `price-change`     | Após a primeira cotação do checkout, o preço do primeiro item sobe via `nft.updated`                               |
-| `sold-out`         | Após a primeira cotação do checkout, a edição do primeiro item esgota via `nft.updated`                            |
-| `order-timeout`    | A primeira criação de pedido nunca responde; "Tentar novamente" recupera o mesmo pedido pela chave de idempotência |
-| `payment-declined` | O pedido é recusado pela rede                                                                                      |
+| Id                 | Efeito                                                                                                                                                                       |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default`          | Sucesso em tudo, latência de 150 a 450 ms, pedido confirmado após 2,5 s                                                                                                      |
+| `empty`            | Catálogo vazio                                                                                                                                                               |
+| `slow`             | Latência de 2,5 a 4 s (skeletons)                                                                                                                                            |
+| `jitter`           | Latência de 100 ms a 2,5 s, respostas fora de ordem                                                                                                                          |
+| `offline`          | Todas as requisições falham como erro de rede                                                                                                                                |
+| `server-error`     | Catálogo e detalhe respondem 503 (falha transitória, com nova tentativa)                                                                                                     |
+| `session-expiring` | Sessões duram 20 s; depois a API responde 401 e o app leva ao login preservando a rota                                                                                       |
+| `favorites-fail`   | Mutations de favoritos respondem 503 (rollback otimista)                                                                                                                     |
+| `wallet-rejected`  | Conexão da carteira recusada no pagamento                                                                                                                                    |
+| `price-change`     | Após a primeira cotação do checkout, o preço do primeiro item sobe via `nft.updated`                                                                                         |
+| `sold-out`         | Após a primeira cotação do checkout, a edição do primeiro item esgota via `nft.updated`                                                                                      |
+| `order-timeout`    | A primeira criação de pedido nunca responde e a rede confirma só aos 12 s; "Tentar novamente" ou o evento de confirmação recuperam o mesmo pedido pela chave de idempotência |
+| `payment-declined` | O pedido é recusado pela rede                                                                                                                                                |
 
 Conflito de cadastro e validação de formulário, cupom inválido ou expirado e disponibilidade insuficiente são regras naturais da simulação e valem em todos os cenários.
 
@@ -95,7 +95,7 @@ Os eventos chegam ao app pelo `socket.io-client` real, interceptado pelo MSW.
 Fluxos de falha passo a passo:
 
 1. **Preço muda no checkout**: ative `price-change`, adicione um NFT, vá ao pagamento e aguarde 3 s. O resumo é atualizado, a confirmação exige aceitar os novos valores e o servidor recusa cotações desatualizadas com 409.
-2. **Timeout com recuperação**: ative `order-timeout`, confirme um pedido. Após o timeout do cliente (8 s), clique em "Tentar novamente": o mesmo pedido é recuperado, sem duplicar.
+2. **Timeout com recuperação**: ative `order-timeout`, confirme um pedido. Após o timeout do cliente (8 s), clique em "Tentar novamente": o mesmo pedido é recuperado, sem duplicar. Se você não clicar, o evento `order.updated` da confirmação (aos 12 s) reenvia com a mesma chave e leva à página do pedido.
 3. **Pedido pendente e reconexão**: confirme um pedido no cenário padrão e recarregue a página ou derrube o socket antes dos 2,5 s. O estado é recuperado pelo REST e pelo evento.
 4. **Sessão expirada no checkout**: ative `session-expiring`, entre, preencha o pagamento, aguarde 20 s (ou expire pelo painel) e confirme. O login retorna ao pagamento com o rascunho preservado.
 

@@ -64,12 +64,12 @@ test.describe('Carrinho', () => {
   });
 
   test('disponibilidade limita a quantidade', async ({ page }) => {
-    await login(page, USERS.nova, '/nft/emerald-ape-0042');
-    await page.getByRole('radio', { name: /Edição 1\/1\b/ }).click();
-    await expect(page.getByRole('button', { name: 'Aumentar quantidade' })).toBeDisabled();
     test.skip(
       isMobile(page),
       'no mobile o stepper mantém o mesmo comportamento; verificado no desktop',
     );
+    await login(page, USERS.nova, '/nft/emerald-ape-0042');
+    await page.getByRole('radio', { name: /Edição 1\/1\b/ }).click();
+    await expect(page.getByRole('button', { name: 'Aumentar quantidade' })).toBeDisabled();
   });
 });

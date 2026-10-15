@@ -16,15 +16,15 @@ import {
   useQuote,
 } from '@/features/cart/quote';
 import { orderKeys } from '@/features/orders/queries';
+import { useCurrentUser } from '@/features/auth/session-store';
 import { errorMessage } from '@/lib/error-message';
 import { applyApiErrors } from '@/lib/form-errors';
-
-import { useCurrentUser } from '@/features/auth/session-store';
+import { useOrderUpdates } from '@/realtime/hooks';
 
 import { checkoutDraft, hashPayload, idempotencyStore } from './checkout-storage';
+import { collectorSchema, type CollectorFormValues } from './schemas';
 
 const ANONYMOUS = 'anonymous';
-import { collectorSchema, type CollectorFormValues } from './schemas';
 
 export type ConnectionState =
   | { status: 'idle' }
@@ -165,9 +165,7 @@ export function useCheckout() {
   const quoteChanged = Boolean(
     quote.data && acknowledged && quote.data.fingerprint !== acknowledged,
   );
-  const blockingIssues = (quote.data?.issues ?? []).filter(
-    (issue) => issue.type !== 'price_changed',
-  );
+  const blockingIssues = quote.data?.issues ?? [];
 
   /** Passo 1: valida o formulário, conecta a carteira e revalida a cotação; abre a revisão. */
   const startReview = form.handleSubmit(async (values) => {
@@ -301,6 +299,18 @@ export function useCheckout() {
     setAcknowledged(quote.data.fingerprint);
     setSubmit({ status: 'idle' });
   }, [quote.data]);
+
+  // A resposta do POST se perdeu (timeout) mas o servidor liquidou o pedido e avisou pelo socket:
+  // reenviar com a mesma chave de idempotência recupera o pedido e leva à página dele, sem duplicar.
+  const recovering = useRef(false);
+  useOrderUpdates(() => {
+    if (submit.status !== 'submitting' && submit.status !== 'timeout') return;
+    if (recovering.current) return;
+    recovering.current = true;
+    void confirm().finally(() => {
+      recovering.current = false;
+    });
+  });
 
   return {
     form,

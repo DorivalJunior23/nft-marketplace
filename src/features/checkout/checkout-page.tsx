@@ -139,11 +139,16 @@ function DesktopCheckout({ controller }: { controller: CheckoutController }) {
       {!cart.isPending && !hasItems ? (
         <EmptyState
           title="Seu carrinho está vazio"
-          description="Adicione NFTs antes de ir para o pagamento."
+          description="Adicione NFTs antes de ir para o pagamento. Se você acabou de confirmar uma compra, ela está em Meus pedidos."
           action={
-            <Button asChild size="sm">
-              <Link to="/mercado">Explorar o mercado</Link>
-            </Button>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button asChild size="sm">
+                <Link to="/mercado">Explorar o mercado</Link>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <Link to="/pedidos">Meus pedidos</Link>
+              </Button>
+            </div>
           }
         />
       ) : (
@@ -276,10 +281,16 @@ function MobileCheckout({ controller }: { controller: CheckoutController }) {
       {!cart.isPending && !hasItems ? (
         <EmptyState
           title="Seu carrinho está vazio"
+          description="Se você acabou de confirmar uma compra, ela está em Meus pedidos."
           action={
-            <Button asChild size="sm">
-              <Link to="/mercado">Explorar o mercado</Link>
-            </Button>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button asChild size="sm">
+                <Link to="/mercado">Explorar o mercado</Link>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <Link to="/pedidos">Meus pedidos</Link>
+              </Button>
+            </div>
           }
         />
       ) : (
