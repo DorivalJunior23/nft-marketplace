@@ -127,8 +127,13 @@
     text-rendering: optimizeLegibility;
   }
 
-  :focus-visible {
+  /* Anel de foco só em controles clicáveis; campos de texto usam apenas a borda laranja. */
+  :where(a, button, summary, [role='button'], [role='tab'], [role='radio'], [role='checkbox'], [role='switch'], [role='menuitem'], [role='option'], [tabindex]):not(input, textarea, select):focus-visible {
     @apply ring-ring ring-offset-background ring-2 ring-offset-2 outline-none;
+  }
+
+  :where(input, textarea, select):focus-visible {
+    @apply outline-none;
   }
 
   @media (prefers-reduced-motion: reduce) {
