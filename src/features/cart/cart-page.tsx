@@ -63,7 +63,7 @@ function CartRow({
   return (
     <li
       className={cn(
-        'bg-surface-card grid h-[70px] grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_24px] items-center gap-x-3 pr-6 xl:grid-cols-[250px_1fr_1fr_1fr_24px] xl:gap-x-0',
+        'bg-surface-card grid h-[70px] grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_24px] items-center gap-x-3 pr-6 xl:grid-cols-[250px_77px_75px_87px_24px] xl:gap-x-[61px]',
         busy && 'opacity-70',
       )}
       aria-busy={busy || undefined}
@@ -74,6 +74,7 @@ function CartRow({
           to="/nft/$nftId"
           params={{ nftId: item.nftId }}
           className="focus-visible:ring-ring shrink-0 focus-visible:ring-2 focus-visible:outline-none"
+          aria-label={`${item.nft.name}, ver detalhes`}
         >
           <ArtworkImage
             artwork={item.nft.artwork}
@@ -92,8 +93,8 @@ function CartRow({
               {item.nft.name}
             </Link>
           </h3>
-          <p className="text-brand-secondary text-[14px] leading-4">
-            ID do token: {item.nft.tokenId} · Edição {item.edition.label}
+          <p className="text-brand-secondary truncate text-[14px] leading-4">
+            ID do token: {item.nft.tokenId}
             {soldOut ? <span className="text-coral ml-2 font-bold">Esgotada</span> : null}
           </p>
         </div>
@@ -104,7 +105,7 @@ function CartRow({
       >
         {formatEth(item.unitPrice)}
       </p>
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-1">
         <QuantityStepper
           size="sm"
           value={item.quantity}
@@ -113,11 +114,11 @@ function CartRow({
           disabled={busy || soldOut}
           label={`Quantidade de ${item.nft.name}`}
         />
+        <span className="text-brand-secondary text-[12px] leading-4 whitespace-nowrap">
+          Edição {item.edition.label}
+        </span>
       </div>
-      <p
-        className="text-text-accent text-right text-[16px] leading-4 font-bold"
-        data-testid="cart-item-total"
-      >
+      <p className="text-text-accent text-[16px] leading-4 font-bold" data-testid="cart-item-total">
         {formatEth(item.lineTotal)}
       </p>
       <button
@@ -208,13 +209,13 @@ function DesktopCart() {
         <div className="flex flex-col justify-between gap-8 lg:flex-row">
           <div className="flex min-w-0 flex-1 flex-col gap-3 xl:w-[782px] xl:flex-none">
             <div
-              className="border-primary/30 text-cream grid grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_24px] gap-x-3 border-b pr-6 pb-3 text-[16px] leading-4 xl:grid-cols-[250px_1fr_1fr_1fr_24px] xl:gap-x-0"
+              className="border-primary/30 text-cream grid grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_24px] gap-x-3 border-b pr-6 pb-3 text-[16px] leading-4 xl:grid-cols-[250px_77px_75px_87px_24px] xl:gap-x-[61px]"
               role="presentation"
             >
               <span className="font-bold">NFTs</span>
-              <span className="text-center font-medium">Preço</span>
-              <span className="text-center font-bold">Edições</span>
-              <span className="text-right font-medium">Total</span>
+              <span className="font-medium">Preço</span>
+              <span className="font-bold">Edições</span>
+              <span className="font-medium">Total</span>
               <span />
             </div>
             {cart.isPending ? (
@@ -279,7 +280,7 @@ function DesktopCart() {
                 </Button>
                 <Link
                   to="/mercado"
-                  className="text-cream hover:text-text-accent text-[14px] leading-4"
+                  className="text-text-accent text-[15px] leading-5 hover:underline"
                 >
                   Continuar explorando
                 </Link>

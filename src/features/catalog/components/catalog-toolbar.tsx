@@ -37,7 +37,10 @@ export function CatalogToolbar({
       <div
         role="tablist"
         aria-label="Seções do catálogo"
-        className={cn('flex', compact ? 'gap-4' : 'gap-5')}
+        className={cn(
+          'flex',
+          compact ? '-mx-6 scrollbar-none gap-4 overflow-x-auto px-6' : 'gap-5',
+        )}
       >
         {NFT_TABS.map((item) => {
           const active = item.id === tab;
@@ -51,9 +54,9 @@ export function CatalogToolbar({
               className={cn(
                 'hover:text-text-accent focus-visible:ring-ring focus-visible:ring-offset-background relative shrink-0 cursor-pointer leading-4 whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none',
                 // Área de toque de 44px sem alterar o layout (margens negativas compensam o padding).
-                compact ? '-my-3.5 py-3.5 text-[14px]' : 'text-[15px] font-medium',
-                active ? 'text-text-accent font-bold' : 'text-cream',
-                compact && !active && 'font-normal',
+                compact ? '-my-3.5 py-3.5 text-[14px]/4' : 'text-[15px]/4 font-medium',
+                active ? 'text-text-accent' : 'text-cream',
+                compact && (active ? 'font-bold' : 'font-normal'),
               )}
             >
               {item.label}

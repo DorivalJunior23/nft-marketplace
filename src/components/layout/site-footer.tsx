@@ -134,7 +134,7 @@ export function SiteFooter({ className }: { className?: string }) {
       <div className="bg-surface-dark px-8 py-8">
         <div className="text-cream grid items-center gap-4 text-[14px] leading-[22px] md:grid-cols-4 md:gap-8 xl:gap-[92px]">
           <BrandLogo />
-          <p>
+          <p className="whitespace-nowrap">
             Feito para colecionadores,
             <br />
             criadores e cultura

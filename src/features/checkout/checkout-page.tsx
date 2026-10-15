@@ -167,8 +167,12 @@ function DesktopCheckout({ controller }: { controller: CheckoutController }) {
               <NoWalletNotice />
             ) : null}
             <div className="flex flex-col gap-6 pt-3">
-              <CollectorForm form={form} variant="account" columns={2} />
-              <WalletSwitch controller={controller} />
+              <CollectorForm
+                form={form}
+                variant="account"
+                columns={2}
+                beforeNote={<WalletSwitch controller={controller} />}
+              />
               <ConnectionStatus
                 connection={connection}
                 onDisconnect={() => void controller.disconnect()}
@@ -244,11 +248,12 @@ function MobileWalletCard({
       <span className="flex flex-col gap-1.5">
         <span className="text-cream text-[16px] leading-4 font-bold">{wallet.walletAlias}</span>
         <span className="text-text-secondary text-[14px] leading-[22px]">
-          {wallet.ensName
-            ? `${wallet.ensName}.eth`
-            : `${wallet.address.slice(0, 6)}…${wallet.address.slice(-4).toUpperCase()}`}
+          {wallet.kind === 'primary' || !wallet.ensName
+            ? `${wallet.address.slice(0, 6)}…${wallet.address.slice(-4).toUpperCase()}`
+            : `${wallet.ensName}.eth`}
           <br />
-          Rede {NETWORKS[wallet.network].name}
+          {wallet.kind === 'primary' ? 'Rede principal ' : 'Rede '}
+          {NETWORKS[wallet.network].name}
         </span>
       </span>
     </button>

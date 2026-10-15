@@ -195,7 +195,7 @@ export function NftDetailPage({ nft }: { nft: Nft }) {
         </nav>
         <div className="flex flex-col gap-8 lg:flex-row">
           <NftGallery name={nft.name} gallery={nft.gallery} />
-          <div className="flex min-h-[448px] flex-1 flex-col justify-between gap-5">
+          <div className="flex min-h-[448px] flex-1 flex-col justify-between gap-3">
             <div className="border-primary/30 flex flex-col gap-3 border-b pb-3">
               <h1 id="nft-titulo" className="text-cream text-[28px] leading-[37px] font-bold">
                 {nft.name}

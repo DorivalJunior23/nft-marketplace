@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { useId, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useId, useMemo, useRef, useState, type FormEvent } from 'react';
 
 import { ArtworkImage } from '@/components/common/artwork-image';
 import { EmptyState, ErrorState } from '@/components/common/query-state';
@@ -14,6 +14,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import type { NftSummary } from '@/contracts';
+import { useRequireAuth } from '@/features/auth/use-require-auth';
 import { CatalogFilters } from '@/features/catalog/components/catalog-filters';
 import { CatalogToolbar } from '@/features/catalog/components/catalog-toolbar';
 import {
@@ -24,6 +26,7 @@ import { Pagination } from '@/features/catalog/components/pagination';
 import { nftListOptions } from '@/features/catalog/queries';
 import { toListQuery, type CatalogSearch } from '@/features/catalog/search-params';
 import { useCatalogSearch } from '@/features/catalog/use-catalog-search';
+import { useFavorites, useToggleFavorite } from '@/features/favorites/queries';
 import { useReturnFocus } from '@/hooks/use-return-focus';
 import { cn } from '@/lib/utils';
 
@@ -38,6 +41,15 @@ const SKELETONS = ['a', 'b', 'c', 'd'];
 export function MobileHomePage({ search, route = '/' }: MobileHomePageProps) {
   const query = toListQuery(search);
   const list = useQuery(nftListOptions(query));
+  const favorites = useFavorites();
+  const favoriteIds = useMemo(() => favorites.data ?? [], [favorites.data]);
+  const toggle = useToggleFavorite();
+  const { requireAuth } = useRequireAuth();
+  const toggleFavorite = useCallback(
+    (nft: NftSummary) =>
+      requireAuth(() => toggle.mutate({ nftId: nft.id, next: !favoriteIds.includes(nft.id) })),
+    [requireAuth, toggle, favoriteIds],
+  );
   const { setFilters, setPage } = useCatalogSearch(search, route);
   const navigate = useNavigate();
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -152,7 +164,12 @@ export function MobileHomePage({ search, route = '/' }: MobileHomePageProps) {
           <ul className="grid grid-cols-2 gap-x-4 gap-y-6">
             {list.data?.items.map((nft, index) => (
               <li key={nft.id} className={cn(index % 2 === 1 && 'mt-8')}>
-                <MobileNftCard nft={nft} priority={index < 2} />
+                <MobileNftCard
+                  nft={nft}
+                  priority={index < 2}
+                  isFavorite={favoriteIds.includes(nft.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
               </li>
             ))}
           </ul>
@@ -207,12 +224,12 @@ export function MobileHomePage({ search, route = '/' }: MobileHomePageProps) {
   );
 }
 
-/** Banner do topo mobile (366x190): gradientes laranja, texto à esquerda e duas artes sobrepostas. */
+/** Banner do topo mobile (366x190) sobre o fundo da página: gradiente e brilhos laranja (o retângulo cinza do Figma é só máscara), texto à esquerda e duas artes sobrepostas. */
 function MobileHeroBanner() {
   return (
     <section
       aria-labelledby="hero-mobile"
-      className="bg-gray-light relative h-[190px] overflow-hidden rounded-[12px]"
+      className="relative h-[190px] overflow-hidden rounded-[12px]"
     >
       <div
         aria-hidden="true"

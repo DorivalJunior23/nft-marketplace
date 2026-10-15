@@ -91,7 +91,7 @@ test.describe('Catálogo', () => {
 
   test('acesso direto ao detalhe e NFT inexistente', async ({ page }) => {
     await gotoApp(page, '/nft/emerald-ape-0042');
-    await expect(page.getByRole('heading', { level: 1, name: 'Emerald Ape #0042' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Emerald Ape #042' })).toBeVisible();
     await expect(page.getByTestId('nft-price')).toContainText('1.19 ETH');
 
     await gotoApp(page, '/nft/nao-existe');

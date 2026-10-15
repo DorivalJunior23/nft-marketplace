@@ -35,7 +35,7 @@ export function MobileNftCard({
             size={168}
             alt=""
             priority={priority}
-            className="mx-auto size-[168px] rounded-[16px]"
+            className="mx-auto aspect-square h-auto w-full max-w-[168px] rounded-[16px]"
           />
         </Link>
         {nft.rarity === 'raro' ? (

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
 import { SelectField, TextField, type FieldVariant } from '@/components/forms/field';
@@ -11,10 +12,12 @@ interface CollectorFormProps {
   variant: FieldVariant;
   /** Layout em duas colunas de 370px (desktop) ou uma coluna (mobile). */
   columns: 1 | 2;
+  /** Conteúdo entre os campos e a observação (Figma: o rádio "Usar outra carteira?"). */
+  beforeNote?: ReactNode;
 }
 
 /** "Perfil do colecionador" do pagamento (Figma): dez campos, observação opcional. */
-export function CollectorForm({ form, variant, columns }: CollectorFormProps) {
+export function CollectorForm({ form, variant, columns, beforeNote }: CollectorFormProps) {
   const errors = form.formState.errors;
   const grid = cn('grid gap-3', columns === 2 && 'grid-cols-2 gap-x-6');
   const leading = (
@@ -122,6 +125,7 @@ export function CollectorForm({ form, variant, columns }: CollectorFormProps) {
           />
         </div>
       </div>
+      {beforeNote}
       <div className="flex max-w-[350px] flex-col gap-3">
         <label htmlFor="checkout-note" className="text-cream text-[15px] leading-[15px]">
           Observação do colecionador (opcional)

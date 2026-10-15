@@ -14,7 +14,7 @@ test.describe('Carrinho', () => {
 
     await gotoApp(page, '/carrinho');
     const item = page.getByTestId('cart-item').first();
-    await expect(item).toContainText('Emerald Ape #0042');
+    await expect(item).toContainText('Emerald Ape #042');
     await expect(item.getByRole('status')).toHaveText('2');
     await expect(page.getByTestId('summary-subtotal')).toHaveText('2.38 ETH');
     await expect(page.getByTestId('summary-total')).toHaveText('2.396 ETH');
@@ -60,7 +60,7 @@ test.describe('Carrinho', () => {
     await expect(page).toHaveURL(/\/pagamento$/);
     await gotoApp(page, '/carrinho');
     await expect(page.getByTestId('cart-item')).toHaveCount(1);
-    await expect(page.getByTestId('cart-item').first()).toContainText('Golden Beat #0207');
+    await expect(page.getByTestId('cart-item').first()).toContainText('Golden Beat #207');
   });
 
   test('sem conexão o carrinho mostra erro e recupera ao tentar novamente', async ({ page }) => {

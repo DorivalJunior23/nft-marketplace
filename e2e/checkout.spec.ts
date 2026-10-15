@@ -17,7 +17,7 @@ test.describe('Compra', () => {
   test('compra completa do catálogo ao recibo confirmado', async ({ page }) => {
     await gotoApp(page, '/');
     await page
-      .getByRole('link', { name: /Emerald Ape #0042, ver detalhes/ })
+      .getByRole('link', { name: /Emerald Ape #042, ver detalhes/ })
       .first()
       .click();
     await expect(page).toHaveURL(/\/nft\/emerald-ape-0042/);

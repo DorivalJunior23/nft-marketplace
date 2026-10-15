@@ -107,7 +107,7 @@ export function OrderReceipt({ order, layout, onClose }: OrderReceiptProps) {
                   </p>
                 </div>
               </div>
-              <p className="flex items-center gap-12">
+              <p className="flex shrink-0 items-center gap-6 whitespace-nowrap sm:gap-12">
                 <span className="text-text-secondary text-[14px] leading-4">
                   (x {item.quantity})
                 </span>

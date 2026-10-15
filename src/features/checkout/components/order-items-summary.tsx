@@ -25,7 +25,10 @@ export function OrderItemsSummary({
   const items = cart?.items ?? [];
   return (
     <section aria-labelledby="seus-nfts" className="flex flex-col gap-3">
-      <h2 id="seus-nfts" className="text-cream text-[17px] leading-4 font-bold">
+      <h2
+        id="seus-nfts"
+        className={cn('text-cream text-[17px] leading-4 font-bold', compact && 'sr-only')}
+      >
         Seus NFTs
       </h2>
       <div className="border-primary/30 text-cream flex items-center justify-between border-b pb-3 text-[16px] leading-4">
@@ -42,7 +45,10 @@ export function OrderItemsSummary({
           : items.map((item) => (
               <li
                 key={item.id}
-                className="bg-surface-card flex h-[70px] items-center gap-2 pr-4 pl-1"
+                className={cn(
+                  'bg-surface-card flex h-[70px] items-center gap-2 pr-4 pl-1',
+                  compact && 'pr-2',
+                )}
                 data-testid="checkout-item"
               >
                 <ArtworkImage
@@ -55,15 +61,25 @@ export function OrderItemsSummary({
                   <p className="text-cream truncate text-[16px] leading-4 font-bold">
                     {item.nft.name}
                   </p>
-                  <p className="text-brand-secondary text-[14px] leading-4">
+                  <p className="text-brand-secondary truncate text-[14px] leading-4">
                     ID do token: {item.nft.tokenId}
                   </p>
                 </div>
-                <p className="flex items-center gap-4 text-right">
+                <p
+                  className={cn(
+                    'flex shrink-0 items-center gap-4 text-right whitespace-nowrap',
+                    compact && 'gap-2',
+                  )}
+                >
                   <span className="text-text-secondary text-[14px] leading-4">
                     (x {item.quantity})
                   </span>
-                  <span className="text-text-accent text-[18px] leading-4 font-bold">
+                  <span
+                    className={cn(
+                      'text-text-accent text-[18px] leading-4 font-bold',
+                      compact && 'text-[16px]',
+                    )}
+                  >
                     {formatEth(item.lineTotal)}
                   </span>
                 </p>

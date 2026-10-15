@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useRouterState } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { toast } from '@/lib/toast';
 
 import { authApi } from '@/api';
@@ -29,18 +29,21 @@ export function SessionSync() {
     if (check.data) sessionStore.updateUser(check.data.user);
   }, [check.data]);
 
+  // O motivo fica no store até o próximo login: qualquer redirecionamento ao login (guarda de rota,
+  // ação privada ou este efeito) leva `motivo=sessao-expirada`, e o aviso aparece na tela de login.
+  const handled = useRef(false);
   useEffect(() => {
-    if (endedReason !== 'expired') return;
+    if (endedReason !== 'expired') {
+      handled.current = false;
+      return;
+    }
+    if (handled.current) return;
+    handled.current = true;
     if (isPrivatePath(location.pathname)) {
-      // O aviso fica na própria tela de login (via URL), que preserva a rota de origem.
-      void navigate({
-        to: '/entrar',
-        search: { redirect: location.href, motivo: 'sessao-expirada' },
-      });
+      void navigate({ to: '/entrar', search: sessionStore.loginSearch(location.href) });
     } else {
       toast.warning('Sua sessão expirou. Entre novamente para continuar de onde parou.');
     }
-    sessionStore.clearEndedReason();
   }, [endedReason, location.pathname, location.href, navigate]);
 
   return null;

@@ -45,6 +45,11 @@ function setState(next: SessionState): void {
  */
 export const sessionStore = {
   getState: () => state,
+  /** Search params do login após uma expiração: a tela mostra o aviso e preserva a rota. */
+  loginSearch: (redirect: string) => ({
+    redirect,
+    motivo: state.endedReason === 'expired' ? ('sessao-expirada' as const) : undefined,
+  }),
   getToken: () => state.session?.token ?? null,
   getUser: (): User | null => state.session?.user ?? null,
   isAuthenticated: () => state.session !== null,

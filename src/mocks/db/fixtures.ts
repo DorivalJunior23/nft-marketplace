@@ -277,7 +277,8 @@ export function createNftFixtures(total = 120): Nft[] {
     used.add(id);
     const listedAt = new Date(BASE_DATE - index * 36e5 * 7).toISOString();
     const isNew = index < 24;
-    const name = `${spec.name} #${spec.tokenId}`;
+    // Figma: nome com 3 dígitos ("Emerald Ape #042") e ID do token com 4 ("#0042").
+    const name = `${spec.name} #${spec.tokenId.slice(1)}`;
     const attributes = [
       ...ATTRIBUTE_POOL[spec.artwork].slice(0, 2),
       spec.rarity ? 'Raro' : 'Comum',

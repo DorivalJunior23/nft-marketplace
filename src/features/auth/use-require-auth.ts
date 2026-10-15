@@ -1,7 +1,7 @@
 import { useNavigate, useRouterState } from '@tanstack/react-router';
 import { useCallback } from 'react';
 
-import { useCurrentUser } from './session-store';
+import { sessionStore, useCurrentUser } from './session-store';
 
 /**
  * Para ações privadas disparadas de telas públicas (favoritar, comprar): se não houver
@@ -20,7 +20,7 @@ export function useRequireAuth() {
       }
       void navigate({
         to: '/entrar',
-        search: { redirect: `${location.pathname}${location.searchStr}` },
+        search: sessionStore.loginSearch(`${location.pathname}${location.searchStr}`),
       });
       return false;
     },
